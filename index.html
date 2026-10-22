@@ -1375,9 +1375,20 @@ var auth = (function(){
   var a = platParse(AUTH_KEY);
   if (!a || !Array.isArray(a.users)) a = { users: [], session: null };
   if (!('session' in a)) a.session = null;
-  if (!a.users.some(function(u){ return u.email === 'demo@swapghar.in'; })){
+  var demo = a.users.find(function(u){ return u.email === 'demo@swapghar.in'; });
+  var demoExp = new Date(); demoExp.setDate(demoExp.getDate() + 365);
+  if (!demo){
     a.users.unshift({ name:'Demo Traveller', email:'demo@swapghar.in', password:'demo1234',
-      memberSince:'January 2025', plus:false, plusExpiry:null, verification:{ status:'Not verified', idType:null } });
+      memberSince:'January 2025', plus:true, plusExpiry:dstr(demoExp), verification:{ status:'Verified', idType:'Aadhaar' }, seedVersion:2 });
+    try { localStorage.setItem(AUTH_KEY, JSON.stringify(a)); } catch(e){}
+  } else if ((demo.seedVersion || 1) < 2){
+    /* Seed v2: the showcase account is ID-verified with SwapGhar Plus active.
+       Upgrade the seeded record in place only — name, password, member-since and
+       every other account are preserved; nothing else in storage is touched. */
+    demo.plus = true; demo.plusExpiry = dstr(demoExp);
+    demo.verification = { status:'Verified', idType:'Aadhaar' };
+    demo.seedVersion = 2;
+    try { localStorage.setItem(AUTH_KEY, JSON.stringify(a)); } catch(e){}
   }
   return a;
 })();
@@ -1440,6 +1451,32 @@ function hostName(t){ var h = tripHome(t); return h ? h.host : 'Host'; }
 function hostGreeting(t){
   var h = tripHome(t);
   return 'Hi! Thanks for your interest in "' + t.title + '". I am ' + (h ? h.host : 'your host') + ', happy to answer any questions about the home, the area, or dates.';
+}
+
+/* Seeded demo trip (seed v2): the demo account showcases one confirmed exchange so
+   My Trips and Messages are not empty on first login. Inserted once, additively,
+   the first time the demo account is signed in (or on load when its session is
+   already active). Flagged demoSeed so it is never duplicated; existing trips and
+   points are never wiped — the points move mirrors the finalize flow exactly. */
+function ensureDemoSeedTrip(){
+  var u = currentUser();
+  if (!u || u.email !== 'demo@swapghar.in') return;
+  if (state.trips.some(function(t){ return t.demoSeed; })) return;
+  var h = state.listings.find(function(x){ return x.id === 'h1'; });
+  if (!h) return;
+  var ci = new Date(); ci.setDate(ci.getDate() + 21);
+  var co = new Date(); co.setDate(co.getDate() + 24);
+  var total = 3 * h.pts;
+  state.trips.unshift({ homeId:h.id, title:h.title, city:h.city, checkin:dstr(ci), checkout:dstr(co),
+    nights:3, mode:'Points swap', detail:fmt(total) + ' pts credited to ' + h.host,
+    status:'Finalized', state:'Finalized', totalPts:total, ptsPerNight:h.pts, paid:true,
+    priority:true, completed:false, reviewed:false, unread:1, demoSeed:true,
+    messages:[
+      { from:'host', author:h.host, text:hostGreeting({ title:h.title, homeId:h.id }), ts:Date.now() - 864e5 },
+      { from:'host', author:h.host, text:'Confirmed on my side too. See you at check-in! Keys and details are in this thread.', ts:Date.now() - 432e5 }
+    ] });
+  if (state.points >= total) state.points -= total; /* finalize moves points on confirmation */
+  save(); syncPoints(); updateUnreadBadges();
 }
 
 /* ---------------- generic fx-style overlay builder ---------------- */
@@ -1508,7 +1545,7 @@ function authNavAction(){
     var em = $('loginEmail').value.trim().toLowerCase(), pw = $('loginPassword').value;
     var u = auth.users.find(function(x){ return x.email.toLowerCase() === em && x.password === pw; });
     if (!u){ toast('No account matches that email + password: try the labelled demo account'); return; }
-    auth.session = u.email; saveAuth(); syncIdentityUI();
+    auth.session = u.email; saveAuth(); ensureDemoSeedTrip(); syncIdentityUI();
     toast('Welcome back, ' + u.name + '!');
     showView('profile');
   });
@@ -1983,6 +2020,7 @@ joinPlan = function(p){
 };
 
 /* ---------------- init ---------------- */
+ensureDemoSeedTrip();
 syncIdentityUI();
 renderTrips();
 updateUnreadBadges();
