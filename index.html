@@ -430,6 +430,48 @@ html[data-theme="dark"] .plan:hover h3{color:var(--signal-ink)}
 }
 
 </style>
+<style id="sg-platform-css">
+/* ===== Platform layer: calendar, messaging, reviews, checkout ===== */
+.cal-box{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:16px 18px;margin:16px 0}
+.cal-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.cal-head b{font-size:1.05rem;color:#f3f1ea}
+.cal-head button{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;font-size:1.05rem;line-height:1}
+.cal-head button:hover{background:rgba(255,255,255,.18)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-dow{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#a9bda9;text-align:center;padding:4px 0}
+.cal-day{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#eef3ea;border-radius:9px;padding:8px 0;font-size:.88rem;text-align:center;font-variant-numeric:tabular-nums;transition:background .2s,transform .2s}
+.cal-day:hover{transform:translateY(-1px)}
+.cal-day.available{background:rgba(74,222,128,.14);border-color:rgba(74,222,128,.35)}
+.cal-day.booked{background:rgba(220,38,38,.22);border-color:rgba(220,38,38,.5);color:#fecaca;text-decoration:line-through}
+.cal-day.unavailable{background:rgba(120,120,120,.25);border-color:rgba(255,255,255,.25);color:#c9c9c9}
+.cal-day.selected{background:var(--signal);color:var(--signal-ink);border-color:var(--signal);font-weight:700;text-decoration:none}
+.cal-day.inrange{background:rgba(251,191,36,.28);border-color:rgba(251,191,36,.55)}
+.cal-day.blank{background:transparent;border:none;pointer-events:none}
+.cal-legend{font-size:.82rem;color:#a9bda9;margin-top:10px}
+.review-item{border-top:1px solid rgba(255,255,255,.13);padding:12px 0}
+.review-item .stars{color:var(--signal);font-weight:700}
+.trip-actions{display:flex;gap:8px;flex-wrap:wrap;width:100%;margin-top:6px}
+.trip-actions .btn{width:auto;padding:8px 16px;font-size:.88rem}
+.btn-sm{padding:8px 16px;font-size:.88rem;width:auto}
+.status[data-state="Pre-approved"]{background:#dbeafe;color:#1e40af;border-color:#93c5fd}
+.status[data-state="Finalized"]{background:#dcfce7;color:#166534;border-color:#86efac}
+.status[data-state="Declined"],.status[data-state="Cancelled"]{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+.status[data-state="Stay completed"]{background:#dcfce7;color:#166534;border-color:#86efac}
+.prio-badge{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:999px;padding:2px 9px;font-family:var(--mono);font-size:.66rem;letter-spacing:.05em}
+.unread-dot{background:#dc2626;color:#fff;border-radius:999px;padding:1px 8px;font-family:var(--mono);font-size:.68rem;font-weight:700}
+.thread-box{max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:6px 2px}
+.msg-bubble{max-width:82%;border-radius:14px;padding:10px 14px;font-size:.93rem;line-height:1.45}
+.msg-bubble.host{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);align-self:flex-start;color:#eef3ea}
+.msg-bubble.me{background:rgba(251,191,36,.16);border:1px solid rgba(251,191,36,.4);align-self:flex-end;color:#fef9e7}
+.msg-bubble small{display:block;color:#a9bda9;font-size:.75rem;margin-bottom:3px}
+.msg-row{display:flex;gap:8px;margin-top:14px}
+.msg-row input{flex:1;border:1.5px solid rgba(255,255,255,.22);border-radius:999px;padding:11px 16px;background:rgba(255,255,255,.07);color:#eef3ea}
+.rev-stars{display:flex;gap:6px;margin:8px 0}
+.rev-star{width:42px;height:42px;border-radius:50%;border:1.5px solid rgba(251,191,36,.5);background:transparent;color:#a9bda9;font-size:1.15rem}
+.rev-star.on{background:var(--signal);color:var(--signal-ink);border-color:var(--signal)}
+.checkout-note{background:rgba(251,191,36,.14);border:1px dashed rgba(251,191,36,.6);border-radius:12px;padding:12px 16px;font-size:.92rem;color:#fde68a}
+html[data-theme="dark"] .cal-day{color:#eef3ea}
+</style>
 </head>
 <body>
 <a class="skip-link" href="#view-home">Skip to content</a>
@@ -438,11 +480,14 @@ html[data-theme="dark"] .plan:hover h3{color:var(--signal-ink)}
   <div class="wrap header-in">
     <a class="logo" href="#" onclick="showView('home');return false;">SWAP<span>GHAR</span></a>
     <div class="points-pill">&#9733; <b id="pointsBalance">1,000</b> pts</div>
+    <span class="points-pill hidden" id="plusBadge" style="background:var(--signal);color:var(--signal-ink);border-color:var(--signal);font-weight:700">PLUS</span>
     <nav>
       <button data-nav="home" class="active" onclick="showView('home')">Explore</button>
       <button data-nav="list" onclick="showView('list')">List your home</button>
-      <button data-nav="trips" onclick="showView('trips')">My Trips</button>
+      <button data-nav="trips" onclick="showView('trips')">My Trips <span id="navUnreadBadge" class="hidden" style="background:#dc2626;color:#fff;border-radius:999px;padding:0 6px;font-weight:700"></span></button>
       <button data-nav="plus" onclick="showView('plus')">Membership</button>
+      <button data-nav="profile" onclick="showView('profile')">Profile</button>
+      <button id="authBtn" type="button" onclick="authNavAction()">Login</button>
       <button onclick="showView('home');setTimeout(function(){var f=document.getElementById('faq');if(f)f.scrollIntoView({behavior:'smooth'});},60)">FAQ</button>
     </nav>
     <button id="themeToggle" class="theme-toggle" type="button" aria-label="Switch to dark mode">&#9790;</button>
@@ -511,8 +556,8 @@ html[data-theme="dark"] .plan:hover h3{color:var(--signal-ink)}
       <div class="sec-head"><h2>Your points wallet</h2></div>
       <div class="band">
         <div class="panel profile-card">
-          <h3>Namaste, Vikranth</h3>
-          <p>Member since 2026 &middot; Govt ID verified &middot; Phone verified</p>
+          <h3 id="walletName">Namaste, Guest</h3>
+          <p id="walletMeta">Browsing as guest &middot; Login for your member profile</p>
           <div class="balance"><span id="pointsBalance2">1,000</span> <small>points available</small></div>
           <p>That's roughly <b style="color:#fbbf24">₹10,000</b> worth of stays — about 8 nights in a typical SwapGhar home.</p>
         </div>
@@ -623,10 +668,89 @@ html[data-theme="dark"] .plan:hover h3{color:var(--signal-ink)}
 <main id="view-trips" class="hidden">
   <section class="wrap">
     <p class="section-kicker">Your exchanges</p>
-    <div class="sec-head"><h2>My Trips</h2></div>
+    <div class="sec-head"><h2>My Trips</h2><div class="spacer"></div><span class="count-label" id="unreadBadge"></span></div>
     <p class="sec-sub">Exchange requests you've sent. Hosts usually reply within a day.</p>
+    <p class="sec-sub" id="tripsUserLine" style="margin-top:6px"></p>
     <div id="tripsList"></div>
     <div class="empty" id="noTrips">No trips yet. Find a home you like and send your first exchange request.</div>
+  </section>
+</main>
+
+<!-- PROFILE -->
+<main id="view-profile" class="hidden">
+  <section class="wrap">
+    <p class="section-kicker">Your account</p>
+    <div class="sec-head"><h2>Profile</h2></div>
+    <div class="panel" style="margin-top:24px;max-width:760px">
+      <h3 id="profName">Guest</h3>
+      <p>Member since <b id="profSince">—</b></p>
+      <p style="margin-top:6px">Plan: <b id="profPlus">Free</b> <span id="profPlusBadge"></span></p>
+      <p style="margin-top:6px">Verification status: <b id="profVerif">Not verified</b> <span id="profVerifBadge"></span></p>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-ghost" id="profAuthBtn" type="button" style="width:auto;padding:10px 22px">Login / Register</button>
+      </div>
+      <hr style="margin:26px 0;border:none;border-top:1px solid var(--line)">
+      <h3>ID verification</h3>
+      <p id="verStatusText">Status: Not verified. Verify a government ID to earn the Verified badge.</p>
+      <form id="verForm">
+        <label>ID type</label>
+        <select id="verIdType">
+          <option value="Aadhaar">Aadhaar</option>
+          <option value="PAN">PAN card</option>
+          <option value="Passport">Passport</option>
+          <option value="Driving Licence">Driving Licence</option>
+        </select>
+        <label>ID number</label>
+        <input type="text" id="verIdNumber" placeholder="e.g. 123412341234 for Aadhaar">
+        <label>Upload ID</label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-ghost" id="verUploadBtn" type="button" style="width:auto;padding:10px 20px">Upload ID (placeholder)</button>
+          <span id="verUploadState" class="meta" style="color:var(--muted)">No file uploaded yet</span>
+        </div>
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-terra" id="verSubmitBtn" type="submit" style="width:auto;padding:11px 26px">Submit for verification</button>
+          <button class="btn btn-green hidden" id="verCompleteBtn" type="button" style="width:auto;padding:11px 26px">Complete review (demo)</button>
+        </div>
+        <p class="meta" style="color:var(--muted);margin-top:10px;font-size:.88rem">Demo verification — your ID number is stored only in this browser and never uploaded anywhere.</p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<!-- LOGIN / REGISTER -->
+<main id="view-auth" class="hidden">
+  <section class="wrap">
+    <p class="section-kicker">Accounts</p>
+    <div class="sec-head"><h2>Login / Register</h2></div>
+    <p class="sec-sub">Accounts are demo-grade: they live only in this browser. Browsing and your points wallet keep working as a guest.</p>
+    <div class="band">
+      <div class="panel">
+        <h3>Login</h3>
+        <div class="parks" style="color:#374151;background:#f3ead9;border-color:var(--line)" id="demoCreds">
+          <b>Demo account (labelled demo — use these):</b><br>
+          Email: demo@swapghar.in<br>Password: demo1234
+        </div>
+        <form id="loginForm">
+          <label>Email</label>
+          <input type="text" id="loginEmail" required placeholder="demo@swapghar.in">
+          <label>Password</label>
+          <input type="password" id="loginPassword" required placeholder="demo1234">
+          <div style="margin-top:18px"><button class="btn btn-terra" type="submit" style="width:auto;padding:11px 26px">Login</button></div>
+        </form>
+      </div>
+      <div class="panel">
+        <h3>Create account</h3>
+        <form id="regForm">
+          <label>Full name</label>
+          <input type="text" id="regName" required placeholder="e.g. Asha Rao">
+          <label>Email</label>
+          <input type="text" id="regEmail" required placeholder="you@example.com">
+          <label>Password</label>
+          <input type="password" id="regPassword" required placeholder="Pick a demo password">
+          <div style="margin-top:18px"><button class="btn btn-green" type="submit" style="width:auto;padding:11px 26px">Create account</button></div>
+        </form>
+      </div>
+    </div>
   </section>
 </main>
 
@@ -636,6 +760,7 @@ html[data-theme="dark"] .plan:hover h3{color:var(--signal-ink)}
     <p class="section-kicker">Membership</p>
     <div class="sec-head"><h2>Membership</h2></div>
     <p class="sec-sub">Start free. Upgrade when the travel bug bites.</p>
+    <p class="sec-sub" id="plusStatusLine" style="margin-top:8px;font-weight:600"></p>
     <div class="plans">
       <div class="plan">
         <h3>Free</h3>
@@ -643,7 +768,8 @@ html[data-theme="dark"] .plan:hover h3{color:var(--signal-ink)}
         <ul>
           <li>Browse all homes</li>
           <li>1 active listing</li>
-          <li>Pay a small service fee per confirmed swap</li>
+          <li>Hold 1 active exchange request at a time</li>
+          <li>Points stays included</li>
           <li>Standard support</li>
         </ul>
         <button class="btn btn-ghost" onclick="joinPlan('Free')">Join free</button>
@@ -654,6 +780,8 @@ html[data-theme="dark"] .plan:hover h3{color:var(--signal-ink)}
         <div class="price">₹4,999 <small>/ year</small></div>
         <ul>
           <li>Unlimited swaps, no per-swap service fee</li>
+          <li>Unlimited active exchange requests</li>
+          <li>Priority badge on your requests</li>
           <li>Unlimited listings</li>
           <li>₹10 lakh home protection included</li>
           <li>Priority support, 7 days a week</li>
@@ -1222,6 +1350,642 @@ document.addEventListener('mouseover', function(e){
   ring.classList.toggle('active', !!t);
 });
 })();
+</script>
+<script>
+/* ===== PLATFORM layer — accounts, verification, calendar, finalize flow, messaging, reviews, Plus gate =====
+   Storage contract (nothing in swapghar_v1 is ever wiped):
+   - swapghar_v1        : original app state; trip objects are EXTENDED in place
+                          (state, messages, unread, totalPts, paid, priority, completed, reviewed).
+                          Legacy trips (status "Request sent", no state) are read and normalised
+                          in memory; a legacy points trip is marked paid=true because the old
+                          build already deducted its points at send time.
+   - swapghar_auth_v1   : accounts + session (seeded demo account lives here).
+   - swapghar_platform_v1: guest Plus/verification, owner availability toggles, user reviews. */
+var AUTH_KEY = 'swapghar_auth_v1';
+var PLAT_KEY = 'swapghar_platform_v1';
+var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function platParse(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } }
+function dstr(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function parseD(s){ var p = String(s||'').split('-'); return new Date(+p[0], (+p[1]||1)-1, +p[2]||1); }
+function todayStr(){ return dstr(new Date()); }
+
+/* ---------------- auth store ---------------- */
+var auth = (function(){
+  var a = platParse(AUTH_KEY);
+  if (!a || !Array.isArray(a.users)) a = { users: [], session: null };
+  if (!('session' in a)) a.session = null;
+  if (!a.users.some(function(u){ return u.email === 'demo@swapghar.in'; })){
+    a.users.unshift({ name:'Demo Traveller', email:'demo@swapghar.in', password:'demo1234',
+      memberSince:'January 2025', plus:false, plusExpiry:null, verification:{ status:'Not verified', idType:null } });
+  }
+  return a;
+})();
+function saveAuth(){ localStorage.setItem(AUTH_KEY, JSON.stringify(auth)); }
+function currentUser(){
+  if (!auth.session) return null;
+  return auth.users.find(function(u){ return u.email === auth.session; }) || null;
+}
+
+/* ---------------- platform store ---------------- */
+var platform = (function(){
+  var p = platParse(PLAT_KEY);
+  if (!p || typeof p !== 'object') p = {};
+  if (typeof p.plus !== 'boolean') p.plus = false;
+  if (!('plusExpiry' in p)) p.plusExpiry = null;
+  if (!p.verification) p.verification = { status:'Not verified', idType:null };
+  if (!p.unavailable) p.unavailable = {};
+  if (!p.reviews) p.reviews = {};
+  return p;
+})();
+function savePlatform(){ localStorage.setItem(PLAT_KEY, JSON.stringify(platform)); }
+
+/* The "active entity" carries Plus + verification: the logged-in user, or the guest platform record. */
+function entity(){ return currentUser() || platform; }
+function saveEntity(){ if (currentUser()) saveAuth(); else savePlatform(); }
+function displayName(){ var u = currentUser(); return u ? u.name : 'Guest'; }
+function isPlus(){
+  var e = entity();
+  if (!e.plus) return false;
+  if (e.plusExpiry && e.plusExpiry < todayStr()) return false;
+  return true;
+}
+function verifStatus(){ var e = entity(); return (e.verification && e.verification.status) || 'Not verified'; }
+function verifiedBadgeHTML(){ return verifStatus() === 'Verified' ? ' <span class="verified">✓ Verified</span>' : ''; }
+
+/* ---------------- trip normalisation (in-memory; persisted on next save()) ---------------- */
+function tripState(t){ return t.state || t.status || 'Requested'; }
+state.trips.forEach(function(t){
+  if (!t.state){
+    var s = t.status;
+    t.state = (s === 'Finalized') ? 'Finalized' : (s === 'Declined') ? 'Declined' : (s === 'Cancelled') ? 'Cancelled' : 'Requested';
+    if (t.mode === 'Points swap' && s === 'Request sent') t.paid = true; /* old build already charged it */
+  }
+  if (!Array.isArray(t.messages)) t.messages = [];
+  if (typeof t.unread !== 'number') t.unread = 0;
+  if (typeof t.completed !== 'boolean') t.completed = false;
+  if (typeof t.reviewed !== 'boolean') t.reviewed = false;
+});
+function tripHome(t){ return state.listings.find(function(h){ return h.id === t.homeId; }) || null; }
+function tripTotal(t){
+  if (typeof t.totalPts === 'number') return t.totalPts;
+  var h = tripHome(t);
+  return (t.mode === 'Points swap' && h) ? t.nights * h.pts : 0;
+}
+function activeRequestCount(){
+  return state.trips.filter(function(t){ var s = tripState(t); return s === 'Requested' || s === 'Pre-approved'; }).length;
+}
+function totalUnread(){ return state.trips.reduce(function(n,t){ return n + (t.unread||0); }, 0); }
+function hostName(t){ var h = tripHome(t); return h ? h.host : 'Host'; }
+function hostGreeting(t){
+  var h = tripHome(t);
+  return 'Hi! Thanks for your interest in "' + t.title + '". I am ' + (h ? h.host : 'your host') + ' — happy to answer any questions about the home, the area, or dates.';
+}
+
+/* ---------------- generic fx-style overlay builder ---------------- */
+function makeOverlay(id, innerHTML){
+  var ov = document.createElement('div');
+  ov.className = 'fx-overlay'; ov.id = id;
+  ov.innerHTML = '<div class="fx-modal" role="alertdialog" aria-modal="true">' + innerHTML + '</div>';
+  document.body.appendChild(ov);
+  ov.addEventListener('click', function(e){ if (e.target === ov) ov.classList.remove('open'); });
+  return ov;
+}
+
+/* ---------------- views (replaces the original showView to add profile/auth) ---------------- */
+showView = function(v){
+  ['home','list','trips','plus','profile','auth'].forEach(function(x){
+    var el = $('view-' + x); if (el) el.classList.toggle('hidden', x !== v);
+  });
+  document.querySelectorAll('nav button').forEach(function(b){ b.classList.toggle('active', b.dataset.nav === v); });
+  if (v === 'trips') renderTrips();
+  if (v === 'profile') renderProfile();
+  if (v === 'plus') updatePlusUI();
+  updateUnreadBadges();
+  window.scrollTo({ top:0, behavior:'smooth' });
+};
+
+/* ---------------- identity UI ---------------- */
+function syncIdentityUI(){
+  var u = currentUser();
+  var ab = $('authBtn');
+  if (ab) ab.textContent = u ? 'Logout' : 'Login';
+  var pb = $('plusBadge');
+  if (pb) pb.classList.toggle('hidden', !isPlus());
+  var wn = $('walletName'); if (wn) wn.textContent = 'Namaste, ' + displayName();
+  var wm = $('walletMeta');
+  if (wm){
+    var since = u ? u.memberSince : 'guest mode';
+    wm.innerHTML = 'Member since ' + since + ' &middot; Verification: ' + verifStatus() +
+      ' &middot; Plan: ' + (isPlus() ? 'SwapGhar Plus' : 'Free') + (u ? '' : ' &middot; <a href="#" onclick="showView(\'auth\');return false;" style="color:#fbbf24">Login</a>');
+  }
+  var tul = $('tripsUserLine');
+  if (tul) tul.innerHTML = 'Signed in as <b>' + displayName() + '</b>' + verifiedBadgeHTML() +
+    (isPlus() ? ' <span class="prio-badge">⭐ Plus priority</span>' : '');
+  updatePlusUI();
+}
+function updatePlusUI(){
+  var line = $('plusStatusLine');
+  if (!line) return;
+  var e = entity();
+  line.textContent = isPlus()
+    ? 'You are a SwapGhar Plus member' + (e.plusExpiry ? ' until ' + e.plusExpiry : '') + ' — unlimited active requests, priority badge on.'
+    : 'You are on the Free plan — 1 active exchange request at a time. Points stays are included for everyone.';
+}
+function authNavAction(){
+  if (currentUser()){
+    auth.session = null; saveAuth(); syncIdentityUI();
+    toast('Logged out. You are browsing as guest again.');
+    showView('home');
+  } else showView('auth');
+}
+
+/* ---------------- auth forms ---------------- */
+(function(){
+  var lf = $('loginForm');
+  if (lf) lf.addEventListener('submit', function(e){
+    e.preventDefault();
+    var em = $('loginEmail').value.trim().toLowerCase(), pw = $('loginPassword').value;
+    var u = auth.users.find(function(x){ return x.email.toLowerCase() === em && x.password === pw; });
+    if (!u){ toast('No account matches that email + password — try the labelled demo account'); return; }
+    auth.session = u.email; saveAuth(); syncIdentityUI();
+    toast('Welcome back, ' + u.name + '!');
+    showView('profile');
+  });
+  var rf = $('regForm');
+  if (rf) rf.addEventListener('submit', function(e){
+    e.preventDefault();
+    var nm = $('regName').value.trim(), em = $('regEmail').value.trim().toLowerCase(), pw = $('regPassword').value;
+    if (!nm || em.indexOf('@') < 1 || pw.length < 4){ toast('Add a name, a valid email and a 4+ character password'); return; }
+    if (auth.users.some(function(x){ return x.email.toLowerCase() === em; })){ toast('An account with that email already exists — login instead'); return; }
+    var now = new Date();
+    var u = { name:nm, email:em, password:pw, memberSince: MONTHS[now.getMonth()] + ' ' + now.getFullYear(),
+      plus:false, plusExpiry:null, verification:{ status:'Not verified', idType:null } };
+    auth.users.push(u); auth.session = em; saveAuth(); syncIdentityUI();
+    toast('Account created — welcome to SwapGhar, ' + nm + '!');
+    showView('profile');
+  });
+  var pab = $('profAuthBtn');
+  if (pab) pab.addEventListener('click', function(){
+    if (currentUser()){
+      auth.session = null; saveAuth(); syncIdentityUI(); renderProfile();
+      toast('Logged out. You are browsing as guest again.');
+    } else showView('auth');
+  });
+})();
+
+/* ---------------- profile + ID verification ---------------- */
+var verUploaded = false;
+function renderProfile(){
+  var u = currentUser(), e = entity(), st = verifStatus();
+  var pn = $('profName'); if (pn) pn.innerHTML = displayName() + verifiedBadgeHTML();
+  var ps = $('profSince'); if (ps) ps.textContent = u ? u.memberSince : '— (guest mode)';
+  var pp = $('profPlus');
+  if (pp) pp.textContent = isPlus() ? 'SwapGhar Plus' + (e.plusExpiry ? ' · until ' + e.plusExpiry : '') : 'Free';
+  var ppb = $('profPlusBadge'); if (ppb) ppb.innerHTML = isPlus() ? ' <span class="prio-badge">⭐ PLUS</span>' : '';
+  var pv = $('profVerif'); if (pv) pv.textContent = st + (e.verification && e.verification.idType ? ' (' + e.verification.idType + ')' : '');
+  var pvb = $('profVerifBadge'); if (pvb) pvb.innerHTML = verifiedBadgeHTML();
+  var vst = $('verStatusText');
+  if (vst) vst.textContent = st === 'Verified' ? 'Status: Verified ✓ — your badge shows on your profile, trips and messages.'
+    : st === 'Under review' ? 'Status: Under review — a demo reviewer can complete the check below.'
+    : 'Status: Not verified. Verify a government ID to earn the Verified badge.';
+  var vc = $('verCompleteBtn'); if (vc) vc.classList.toggle('hidden', st !== 'Under review');
+  var pab = $('profAuthBtn'); if (pab) pab.textContent = u ? 'Logout' : 'Login / Register';
+}
+function validIdNumber(type, num){
+  if (type === 'Aadhaar') return /^\d{12}$/.test(num);
+  if (type === 'PAN') return /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(num.toUpperCase());
+  if (type === 'Passport') return /^[A-Z][0-9]{7}$/.test(num.toUpperCase());
+  return /^[A-Za-z0-9]{10,18}$/.test(num); /* Driving Licence */
+}
+(function(){
+  var ub = $('verUploadBtn');
+  if (ub) ub.addEventListener('click', function(){
+    verUploaded = true;
+    $('verUploadState').textContent = 'ID image uploaded (placeholder) ✓';
+    ub.textContent = '✓ ID uploaded (placeholder)';
+  });
+  var vf = $('verForm');
+  if (vf) vf.addEventListener('submit', function(e){
+    e.preventDefault();
+    var type = $('verIdType').value, num = $('verIdNumber').value.trim();
+    if (!validIdNumber(type, num)){ toast('That ' + type + ' number does not look right — check the format and try again'); return; }
+    if (!verUploaded){ toast('Upload your ID first (use the upload placeholder button)'); return; }
+    var ent = entity();
+    ent.verification = { status:'Under review', idType:type };
+    saveEntity(); renderProfile(); syncIdentityUI();
+    toast('ID submitted — status: Under review');
+  });
+  var vc = $('verCompleteBtn');
+  if (vc) vc.addEventListener('click', function(){
+    var ent = entity();
+    if (!ent.verification || ent.verification.status !== 'Under review'){ toast('Nothing is under review right now'); return; }
+    ent.verification.status = 'Verified';
+    saveEntity(); renderProfile(); syncIdentityUI();
+    toast('Verification complete — you are now Verified ✓');
+  });
+})();
+
+/* ---------------- availability calendar ---------------- */
+var calView = new Date(); calView.setDate(1);
+var calHomeId = null;
+function seededBooked(h, ds){
+  var day = parseD(ds).getDate(), s = (h && h.seed) || 3, a = (s % 10) + 2;
+  return (day >= a && day <= a + 2) || (day >= a + 11 && day <= a + 13);
+}
+function finalizedBlocked(homeId, ds){
+  return state.trips.some(function(t){
+    return t.homeId === homeId && tripState(t) === 'Finalized' && t.checkin <= ds && ds < t.checkout;
+  });
+}
+function ownerUnavailable(homeId, ds){
+  var arr = platform.unavailable[homeId] || [];
+  return arr.indexOf(ds) >= 0;
+}
+function renderCalendar(){
+  var grid = $('calGrid'), title = $('calTitle'), hint = $('calHint');
+  if (!grid || !calHomeId) return;
+  var h = state.listings.find(function(x){ return x.id === calHomeId; });
+  if (!h) return;
+  title.textContent = MONTHS[calView.getMonth()] + ' ' + calView.getFullYear();
+  var own = state.myHomes.indexOf(h.id) >= 0;
+  if (hint) hint.textContent = own
+    ? 'This is your home — tap a free date to toggle it available / unavailable. Booked nights cannot be changed.'
+    : 'Tap dates to pick check-in and check-out. Struck-through nights are already booked.';
+  var first = new Date(calView.getFullYear(), calView.getMonth(), 1);
+  var daysInMonth = new Date(calView.getFullYear(), calView.getMonth() + 1, 0).getDate();
+  var inVal = $('dIn') ? $('dIn').value : '', outVal = $('dOut') ? $('dOut').value : '';
+  var html = ['Su','Mo','Tu','We','Th','Fr','Sa'].map(function(d){ return '<div class="cal-dow">' + d + '</div>'; }).join('');
+  for (var b = 0; b < first.getDay(); b++) html += '<div class="cal-day blank"></div>';
+  for (var d = 1; d <= daysInMonth; d++){
+    var dt = new Date(calView.getFullYear(), calView.getMonth(), d), ds = dstr(dt);
+    var cls = 'cal-day available', label = '';
+    if (finalizedBlocked(h.id, ds) || seededBooked(h, ds)){ cls = 'cal-day booked'; label = 'Booked'; }
+    else if (ownerUnavailable(h.id, ds)){ cls = 'cal-day unavailable'; label = 'Unavailable'; }
+    if (ds === inVal || ds === outVal) cls += ' selected';
+    else if (inVal && outVal && ds > inVal && ds < outVal) cls += ' inrange';
+    html += '<button type="button" class="' + cls + '" data-date="' + ds + '" ' + (label ? 'data-cal="' + label.toLowerCase() + '"' : 'data-cal="available"') +
+      ' onclick="calDayClick(\'' + ds + '\')" aria-label="' + ds + (label ? ' ' + label : ' available') + '">' + d + '</button>';
+  }
+  grid.innerHTML = html;
+}
+function calNav(dir){ calView.setMonth(calView.getMonth() + dir); renderCalendar(); }
+function calDayClick(ds){
+  var h = state.listings.find(function(x){ return x.id === calHomeId; });
+  if (!h) return;
+  if (state.myHomes.indexOf(h.id) >= 0){
+    if (finalizedBlocked(h.id, ds) || seededBooked(h, ds)){ toast('That night is already booked — it cannot be toggled'); return; }
+    var arr = platform.unavailable[h.id] || (platform.unavailable[h.id] = []);
+    var i = arr.indexOf(ds);
+    if (i >= 0){ arr.splice(i, 1); toast(ds + ' is available again'); }
+    else { arr.push(ds); toast(ds + ' marked unavailable'); }
+    savePlatform(); renderCalendar();
+    return;
+  }
+  var inEl = $('dIn'), outEl = $('dOut');
+  if (!inEl || !outEl) return;
+  if (!inEl.value || (inEl.value && outEl.value)){ inEl.value = ds; outEl.value = ''; }
+  else if (ds > inEl.value){ outEl.value = ds; }
+  else { inEl.value = ds; }
+  calc(); renderCalendar();
+}
+
+/* ---------------- reviews ---------------- */
+var REVIEW_POOL = [
+  { author:'Asha', rating:5, text:'Wonderful stay — the home was exactly as described and check-in was effortless.' },
+  { author:'Rohan', rating:5, text:'Great host, quick replies, spotless rooms. Would happily swap again.' },
+  { author:'Meera', rating:4, text:'Lovely neighbourhood and a very comfortable home. Recommended.' },
+  { author:'Kabir', rating:5, text:'Felt like home from day one. The host left thoughtful local tips.' }
+];
+function baseReviews(h){
+  var a = REVIEW_POOL[(h.seed || 1) % REVIEW_POOL.length];
+  var b = REVIEW_POOL[((h.seed || 1) + 2) % REVIEW_POOL.length];
+  return [a, b];
+}
+function renderReviews(homeId){
+  var box = $('reviewsList'); if (!box) return;
+  var h = state.listings.find(function(x){ return x.id === homeId; });
+  if (!h) return;
+  var user = platform.reviews[homeId] || [];
+  var all = baseReviews(h).concat(user);
+  box.innerHTML = all.map(function(r){
+    return '<div class="review-item"><span class="stars">' + '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating) + '</span> ' +
+      '<b>' + r.author + '</b>' + (r.verified ? ' <span class="verified">✓ Verified</span>' : '') +
+      '<div style="color:#c3d4c6;margin-top:3px">' + r.text + '</div></div>';
+  }).join('');
+}
+
+/* ---------------- listing modal: inject calendar + reviews ---------------- */
+var _origOpenListing = openListing;
+openListing = function(id){
+  _origOpenListing(id);
+  calHomeId = id;
+  calView = new Date(); calView.setDate(1);
+  var inEl = document.querySelector('#modalBox .modal-in');
+  if (!inEl) return;
+  var calcBox = inEl.querySelector('.calc');
+  var cal = document.createElement('div');
+  cal.className = 'cal-box'; cal.id = 'calSection';
+  cal.innerHTML = '<b>Availability calendar</b>' +
+    '<div class="cal-head" style="margin-top:10px"><button type="button" id="calPrev" onclick="calNav(-1)" aria-label="Previous month">‹</button>' +
+    '<b id="calTitle"></b>' +
+    '<button type="button" id="calNext" onclick="calNav(1)" aria-label="Next month">›</button></div>' +
+    '<div class="cal-grid" id="calGrid"></div>' +
+    '<p class="cal-legend" id="calHint"></p>' +
+    '<p class="cal-legend">■ Booked &nbsp;■ Available &nbsp;■ Unavailable (owner-set)</p>';
+  if (calcBox) inEl.insertBefore(cal, calcBox); else inEl.appendChild(cal);
+  var rev = document.createElement('div');
+  rev.id = 'reviewsSection'; rev.style.marginTop = '18px';
+  rev.innerHTML = '<b>Guest reviews</b><div id="reviewsList"></div>';
+  if (calcBox && calcBox.parentNode === inEl) inEl.insertBefore(rev, calcBox.nextSibling); else inEl.appendChild(rev);
+  renderCalendar();
+  renderReviews(id);
+};
+
+/* ---------------- finalize flow: request -> pre-approve -> confirm ---------------- */
+var finalizeOverlay = makeOverlay('finalizeOverlay',
+  '<h3 id="finTitle">Confirm this exchange?</h3><p id="finBody"></p>' +
+  '<div class="fx-actions"><button type="button" class="btn btn-ghost" id="finCancelBtn">Not yet</button>' +
+  '<button type="button" class="btn btn-terra" id="finConfirmBtn" style="width:auto;padding:10px 22px">Confirm exchange</button></div>');
+var pendingFinalize = -1;
+finalizeOverlay.querySelector('#finCancelBtn').addEventListener('click', function(){ finalizeOverlay.classList.remove('open'); pendingFinalize = -1; });
+function openFinalize(idx){
+  var t = state.trips[idx]; if (!t) return;
+  pendingFinalize = idx;
+  var total = tripTotal(t);
+  $('finBody').textContent = t.title + '\n' + t.checkin + ' → ' + t.checkout + ' · ' + t.nights + ' night' + (t.nights > 1 ? 's' : '') + '\n' +
+    (t.mode === 'Points swap'
+      ? total + ' pts will transfer from your wallet to ' + hostName(t) + ' on confirmation.\nYour balance after: ' + fmt(state.points - (t.paid ? 0 : total)) + ' pts'
+      : 'Simultaneous swap — 0 pts. You host ' + hostName(t) + ' at your home for the same dates.') +
+    '\nThe nights will be blocked on the home\u2019s calendar.';
+  finalizeOverlay.classList.add('open'); /* opening the modal changes no state */
+}
+finalizeOverlay.querySelector('#finConfirmBtn').addEventListener('click', function(){
+  var idx = pendingFinalize; pendingFinalize = -1;
+  finalizeOverlay.classList.remove('open');
+  if (idx < 0) return;
+  var t = state.trips[idx]; if (!t) return;
+  var total = tripTotal(t);
+  if (t.mode === 'Points swap' && !t.paid && total > 0){
+    if (total > state.points){ toast('Not enough points — you need ' + fmt(total) + ' pts to finalize'); return; }
+    state.points -= total; t.paid = true;
+  }
+  t.state = 'Finalized'; t.status = 'Finalized';
+  t.detail = t.mode === 'Points swap' ? fmt(total) + ' pts credited to ' + hostName(t) : 'Simultaneous swap — 0 pts, homes exchanged';
+  t.messages.push({ from:'host', author:hostName(t), text:'Confirmed on my side too — see you at check-in! Keys and details are in this thread.', ts:Date.now() });
+  t.unread = (t.unread || 0) + 1;
+  save(); syncPoints(); renderTrips(); updateUnreadBadges();
+  toast('Exchange finalized — ' + (t.mode === 'Points swap' ? fmt(total) + ' pts transferred to ' + hostName(t) : 'swap locked in') + '. Nights blocked on the calendar.');
+});
+
+/* ---------------- send request (replaces the original immediate-charge submitRequest) ---------------- */
+submitRequest = function(){
+  var n = nights();
+  if (n <= 0){ toast('Please pick valid dates first'); return; }
+  if (activeRequestCount() >= 1 && !isPlus()){ openUpgradeWall(); return; } /* Free gate: 1 active request */
+  var home = current;
+  if (!home) return;
+  var greeting = function(){ return [{ from:'host', author:home.host, text:hostGreeting({ title:home.title, homeId:home.id }), ts:Date.now() }]; };
+  if (mode === 'points'){
+    var total = n * home.pts;
+    if (total > state.points){ toast('Not enough points — you need ' + fmt(total) + ' pts'); return; }
+    state.trips.unshift({ homeId:home.id, title:home.title, city:home.city, checkin:$('dIn').value, checkout:$('dOut').value,
+      nights:n, mode:'Points swap', detail:fmt(total) + ' pts on confirmation', status:'Requested', state:'Requested',
+      totalPts:total, ptsPerNight:home.pts, paid:false, priority:isPlus(), messages:greeting(), unread:1, completed:false, reviewed:false });
+  } else {
+    var offerId = $('offerHome').value;
+    if (!offerId){ toast('List your home first to offer a simultaneous swap'); return; }
+    var offer = state.listings.find(function(h){ return h.id === offerId; });
+    state.trips.unshift({ homeId:home.id, title:home.title, city:home.city, checkin:$('dIn').value, checkout:$('dOut').value,
+      nights:n, mode:'Simultaneous swap', detail:'Offering: ' + offer.title, status:'Requested', state:'Requested',
+      totalPts:0, ptsPerNight:0, paid:true, priority:isPlus(), messages:greeting(), unread:1, completed:false, reviewed:false });
+  }
+  save(); closeModal();
+  toast('Request sent to ' + home.host + ' — status: Requested. Find it in My Trips');
+  updateUnreadBadges();
+  showView('trips');
+};
+
+/* ---------------- trip actions ---------------- */
+function simHost(idx, action){
+  var t = state.trips[idx]; if (!t) return;
+  if (action === 'approve'){
+    t.state = 'Pre-approved'; t.status = 'Pre-approved';
+    t.messages.push({ from:'host', author:hostName(t), text:'Good news — I have pre-approved your request! Confirm on your side and we are all set.', ts:Date.now() });
+    toast('Host pre-approved your request (demo simulation)');
+  } else {
+    t.state = 'Declined'; t.status = 'Declined';
+    t.messages.push({ from:'host', author:hostName(t), text:'So sorry — those dates no longer work for us. Please try another set of dates!', ts:Date.now() });
+    toast('Host declined this request (demo simulation)');
+  }
+  t.unread = (t.unread || 0) + 1;
+  save(); renderTrips(); updateUnreadBadges();
+}
+function cancelTrip(idx){
+  var t = state.trips[idx]; if (!t) return;
+  var s = tripState(t);
+  if (s !== 'Requested' && s !== 'Pre-approved') return;
+  t.state = 'Cancelled'; t.status = 'Cancelled';
+  save(); renderTrips(); updateUnreadBadges();
+  toast('Request cancelled — no points were touched');
+}
+function completeStay(idx){
+  var t = state.trips[idx]; if (!t) return;
+  t.completed = true; t.status = 'Stay completed';
+  save(); renderTrips();
+  toast('Stay marked complete (demo) — you can now leave a review');
+}
+
+/* ---------------- trips rendering (extended) ---------------- */
+renderTrips = function(){
+  var noT = $('noTrips'); if (noT) noT.classList.toggle('hidden', state.trips.length > 0);
+  var tul = $('tripsUserLine');
+  if (tul) tul.innerHTML = 'Signed in as <b>' + displayName() + '</b>' + verifiedBadgeHTML() + (isPlus() ? ' <span class="prio-badge">⭐ Plus priority</span>' : '');
+  $('tripsList').innerHTML = state.trips.map(function(t, idx){
+    var s = t.completed ? 'Stay completed' : tripState(t);
+    var acts = '';
+    acts += '<button class="btn btn-ghost btn-sm" onclick="openThread(' + idx + ')">Messages' + (t.unread ? ' <span class="unread-dot">' + t.unread + ' new</span>' : '') + '</button>';
+    if (tripState(t) === 'Requested'){
+      acts += '<button class="btn btn-green btn-sm" onclick="simHost(' + idx + ',\'approve\')">Simulate host response (demo)</button>';
+      acts += '<button class="btn btn-ghost btn-sm" onclick="simHost(' + idx + ',\'decline\')">Simulate host decline (demo)</button>';
+      acts += '<button class="btn btn-ghost btn-sm" onclick="cancelTrip(' + idx + ')">Cancel request</button>';
+    }
+    if (tripState(t) === 'Pre-approved'){
+      acts += '<button class="btn btn-terra btn-sm" onclick="openFinalize(' + idx + ')">Confirm exchange</button>';
+      acts += '<button class="btn btn-ghost btn-sm" onclick="cancelTrip(' + idx + ')">Cancel request</button>';
+    }
+    if (tripState(t) === 'Finalized' && !t.completed){
+      acts += '<button class="btn btn-green btn-sm" onclick="completeStay(' + idx + ')">Complete stay (demo)</button>';
+    }
+    if (t.completed && !t.reviewed){
+      acts += '<button class="btn btn-terra btn-sm" onclick="openReview(' + idx + ')">Write a review</button>';
+    }
+    return '<div class="trip"><div><b>' + t.title + '</b> · ' + t.city +
+      (t.priority ? ' <span class="prio-badge">⭐ Priority request</span>' : '') + '<br>' +
+      '<span class="meta">' + t.checkin + ' → ' + t.checkout + ' · ' + t.nights + ' night' + (t.nights > 1 ? 's' : '') + ' · ' + t.mode + ' · ' + t.detail + '</span></div>' +
+      '<span class="status" data-state="' + s + '">' + s + '</span>' +
+      '<div class="trip-actions">' + acts + '</div></div>';
+  }).join('');
+  updateUnreadBadges();
+};
+function updateUnreadBadges(){
+  var n = totalUnread();
+  var b = $('unreadBadge');
+  if (b){ b.textContent = n ? n + ' unread message' + (n > 1 ? 's' : '') : ''; }
+  var nb = $('navUnreadBadge');
+  if (nb){ nb.textContent = n ? String(n) : ''; nb.classList.toggle('hidden', !n); }
+}
+
+/* ---------------- messaging ---------------- */
+/* Seeded host reply pool (demo only — replies are canned, no real host is contacted). */
+var HOST_REPLIES = [
+  'Thanks for the message! The home is exactly as in the photos — happy to share more details if you need them.',
+  'Good question! Check-in is flexible after 12 noon, and I will leave the keys with our neighbour if I am out.',
+  'That works for us. The area is quiet at night and the metro / bus stop is a short walk away.',
+  'Lovely! Once the exchange is finalized I will share the full address and a little guide to the neighbourhood.'
+];
+var msgOverlay = document.createElement('div');
+msgOverlay.className = 'overlay'; msgOverlay.id = 'msgOverlay';
+msgOverlay.innerHTML = '<div class="modal"><div class="modal-in" style="padding-top:22px">' +
+  '<div style="display:flex;align-items:center;gap:10px"><h2 id="threadTitle" style="font-size:22px">Messages</h2>' +
+  '<button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="closeThread()">Close</button></div>' +
+  '<div class="thread-box" id="threadBox"></div>' +
+  '<div class="msg-row"><input type="text" id="msgInput" placeholder="Message your host…">' +
+  '<button class="btn btn-terra btn-sm" id="msgSendBtn">Send</button></div></div></div>';
+document.body.appendChild(msgOverlay);
+msgOverlay.addEventListener('click', function(e){ if (e.target === msgOverlay) closeThread(); });
+var msgTripIdx = -1;
+function renderThread(){
+  var t = state.trips[msgTripIdx]; if (!t) return;
+  $('threadTitle').textContent = 'Chat with ' + hostName(t);
+  $('threadBox').innerHTML = t.messages.map(function(m){
+    var mine = m.from === 'me';
+    var author = mine ? displayName() + (verifStatus() === 'Verified' ? ' ✓ Verified' : '') : (m.author || hostName(t)) + ' (host)';
+    return '<div class="msg-bubble ' + (mine ? 'me' : 'host') + '"><small>' + author + '</small>' + m.text + '</div>';
+  }).join('');
+  var box = $('threadBox'); box.scrollTop = box.scrollHeight;
+}
+function openThread(idx){
+  var t = state.trips[idx]; if (!t) return;
+  msgTripIdx = idx;
+  if (!t.messages.length) t.messages.push({ from:'host', author:hostName(t), text:hostGreeting(t), ts:Date.now() });
+  t.unread = 0;
+  save(); renderTrips(); updateUnreadBadges();
+  renderThread();
+  msgOverlay.classList.add('open');
+}
+function closeThread(){ msgOverlay.classList.remove('open'); msgTripIdx = -1; renderTrips(); }
+function sendMessage(){
+  var t = state.trips[msgTripIdx]; if (!t) return;
+  var inp = $('msgInput'), txt = inp.value.trim();
+  if (!txt) return;
+  t.messages.push({ from:'me', author:displayName(), text:txt, ts:Date.now() });
+  /* seeded host reply (demo) */
+  var reply = HOST_REPLIES[(t.messages.length) % HOST_REPLIES.length];
+  t.messages.push({ from:'host', author:hostName(t), text:reply, ts:Date.now() });
+  t.unread = 0; /* thread is open, so the reply is seen */
+  inp.value = '';
+  save(); renderThread();
+}
+msgOverlay.querySelector('#msgSendBtn').addEventListener('click', sendMessage);
+msgOverlay.addEventListener('keydown', function(e){ if (e.key === 'Enter' && e.target && e.target.id === 'msgInput') sendMessage(); });
+
+/* ---------------- reviews: write from a completed trip ---------------- */
+var reviewOverlay = makeOverlay('reviewOverlay',
+  '<h3>Review your stay</h3><p id="revBody"></p>' +
+  '<div class="rev-stars" id="revStars"></div>' +
+  '<textarea id="revText" placeholder="How was the home, the host, the neighbourhood?" style="width:100%;min-height:84px;border-radius:10px;padding:11px 13px;background:rgba(255,255,255,.07);color:#eef3ea;border:1.5px solid rgba(255,255,255,.22)"></textarea>' +
+  '<div class="fx-actions"><button type="button" class="btn btn-ghost" id="revCancelBtn">Not yet</button>' +
+  '<button type="button" class="btn btn-terra" id="revSaveBtn" style="width:auto;padding:10px 22px">Save review</button></div>');
+var reviewTripIdx = -1, reviewRating = 5;
+function paintStars(){
+  var box = reviewOverlay.querySelector('#revStars');
+  box.innerHTML = [1,2,3,4,5].map(function(v){
+    return '<button type="button" class="rev-star' + (v <= reviewRating ? ' on' : '') + '" data-val="' + v + '" onclick="setReviewRating(' + v + ')" aria-label="' + v + ' stars">★</button>';
+  }).join('');
+}
+function setReviewRating(v){ reviewRating = v; paintStars(); }
+function openReview(idx){
+  var t = state.trips[idx]; if (!t) return;
+  reviewTripIdx = idx; reviewRating = 5;
+  reviewOverlay.querySelector('#revBody').textContent = t.title + ' · ' + t.checkin + ' → ' + t.checkout + '. Your review shows on the home\u2019s page.';
+  reviewOverlay.querySelector('#revText').value = '';
+  paintStars();
+  reviewOverlay.classList.add('open');
+}
+reviewOverlay.querySelector('#revCancelBtn').addEventListener('click', function(){ reviewOverlay.classList.remove('open'); reviewTripIdx = -1; });
+reviewOverlay.querySelector('#revSaveBtn').addEventListener('click', function(){
+  var t = state.trips[reviewTripIdx]; if (!t) return;
+  var txt = reviewOverlay.querySelector('#revText').value.trim();
+  if (!txt){ toast('Write a few words for your review first'); return; }
+  var list = platform.reviews[t.homeId] || (platform.reviews[t.homeId] = []);
+  list.push({ rating:reviewRating, text:txt, author:displayName(), verified:verifStatus() === 'Verified' });
+  savePlatform();
+  t.reviewed = true;
+  var h = tripHome(t); if (h) h.reviews = (h.reviews || 0) + 1;
+  save();
+  reviewOverlay.classList.remove('open'); reviewTripIdx = -1;
+  renderTrips();
+  toast('Review saved — it now shows on the home\u2019s page');
+});
+
+/* ---------------- Plus gate: upgrade wall + demo checkout ---------------- */
+var upgradeOverlay = makeOverlay('upgradeOverlay',
+  '<h3>That\u2019s your 1 free active request</h3>' +
+  '<p>The Free plan can hold 1 active exchange request (Requested or Pre-approved) at a time. SwapGhar Plus removes the limit — unlimited active requests plus a priority badge on every request. Points stays stay included for everyone.</p>' +
+  '<div class="fx-actions"><button type="button" class="btn btn-ghost" id="wallCloseBtn">Not now</button>' +
+  '<button type="button" class="btn btn-terra" id="wallUpgradeBtn" style="width:auto;padding:10px 22px">Upgrade to Plus</button></div>');
+function openUpgradeWall(){ upgradeOverlay.classList.add('open'); }
+upgradeOverlay.querySelector('#wallCloseBtn').addEventListener('click', function(){ upgradeOverlay.classList.remove('open'); });
+upgradeOverlay.querySelector('#wallUpgradeBtn').addEventListener('click', function(){
+  upgradeOverlay.classList.remove('open');
+  showView('plus');
+  openCheckout();
+});
+
+var checkoutOverlay = makeOverlay('checkoutOverlay',
+  '<h3>SwapGhar Plus — ₹4,999/year</h3>' +
+  '<div class="checkout-note" id="checkoutDemoLabel">Demo checkout — no real payment. Nothing is charged; this only flips your plan in this browser.</div>' +
+  '<label style="color:#86efac">Name on card / payer</label>' +
+  '<input type="text" id="coName" placeholder="e.g. Vikranth Reddy" style="width:100%">' +
+  '<label style="color:#86efac">Pay with</label>' +
+  '<select id="coMethod" style="width:100%"><option value="card">Card</option><option value="upi">UPI</option></select>' +
+  '<label style="color:#86efac">Card number or UPI ID</label>' +
+  '<input type="text" id="coDetail" placeholder="4242 4242 4242 4242 or name@upi" style="width:100%">' +
+  '<div class="fx-actions"><button type="button" class="btn btn-ghost" id="coCancelBtn">Cancel</button>' +
+  '<button type="button" class="btn btn-terra" id="coPayBtn" style="width:auto;padding:10px 22px">Pay ₹4,999 (demo)</button></div>');
+function openCheckout(){ checkoutOverlay.classList.add('open'); }
+checkoutOverlay.querySelector('#coCancelBtn').addEventListener('click', function(){ checkoutOverlay.classList.remove('open'); });
+checkoutOverlay.querySelector('#coPayBtn').addEventListener('click', function(){
+  var nm = checkoutOverlay.querySelector('#coName').value.trim();
+  var method = checkoutOverlay.querySelector('#coMethod').value;
+  var det = checkoutOverlay.querySelector('#coDetail').value.trim();
+  if (!nm){ toast('Add the payer name to continue'); return; }
+  if (method === 'card' && det.replace(/[\s-]/g, '').length !== 16){ toast('Enter a 16-digit demo card number'); return; }
+  if (method === 'upi' && det.indexOf('@') < 1){ toast('Enter a UPI ID like name@upi'); return; }
+  var e = entity();
+  var exp = new Date(); exp.setDate(exp.getDate() + 365);
+  e.plus = true; e.plusExpiry = dstr(exp);
+  saveEntity();
+  checkoutOverlay.classList.remove('open');
+  syncIdentityUI(); updatePlusUI();
+  toast('Welcome to SwapGhar Plus — demo checkout complete, no real payment taken. Active until ' + e.plusExpiry);
+});
+
+/* joinPlan now drives the working gate/checkout instead of a display-only toast */
+joinPlan = function(p){
+  if (p === 'Plus'){
+    if (isPlus()){ toast('You are already a SwapGhar Plus member'); return; }
+    openCheckout();
+  } else {
+    toast(isPlus() ? 'You are on SwapGhar Plus' : 'You are on the Free plan — 1 active request at a time');
+  }
+};
+
+/* ---------------- init ---------------- */
+syncIdentityUI();
+renderTrips();
+updateUnreadBadges();
 </script>
 </body>
 </html>
