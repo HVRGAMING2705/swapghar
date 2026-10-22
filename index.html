@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwapGhar — Swap homes. Skip the hotel bill.</title>
+<meta name="description" content="SwapGhar is India's home exchange community. Verified travellers swap homes instead of paying for hotels — with a points system that makes non-simultaneous swaps work.">
+<style>
+  :root{
+    --green:#14532d; --green2:#166534; --cream:#faf5ec; --cream2:#f3ead9;
+    --terra:#c2410c; --terra2:#ea580c; --ink:#1c2420; --muted:#5c665f;
+    --card:#ffffff; --line:#e5ddcb; --gold:#b45309;
+    --radius:16px; --shadow:0 6px 24px rgba(20,60,35,.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:Georgia,'Times New Roman',serif;background:var(--cream);color:var(--ink);line-height:1.5}
+  button{font-family:inherit;cursor:pointer}
+  input,select,textarea{font-family:inherit;font-size:1rem}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+
+  /* Header */
+  header{position:sticky;top:0;z-index:40;background:var(--green);color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+  .header-in{display:flex;align-items:center;gap:14px;padding:12px 0;flex-wrap:wrap}
+  .logo{font-size:1.55rem;font-weight:bold;letter-spacing:.5px;color:#fff;text-decoration:none}
+  .logo span{color:#fbbf24}
+  nav{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+  nav button{background:transparent;border:1px solid transparent;color:#e7f0e9;padding:7px 12px;border-radius:999px;font-size:.92rem}
+  nav button:hover{border-color:#4ade80}
+  nav button.active{background:#fbbf24;color:#14532d;font-weight:bold;border-color:#fbbf24}
+  .points-pill{background:#052e16;border:1px solid #4ade80;color:#bbf7d0;border-radius:999px;padding:6px 12px;font-size:.9rem;white-space:nowrap}
+  .points-pill b{color:#fbbf24}
+
+  /* Hero */
+  .hero{background:linear-gradient(160deg,#14532d 0%,#166534 55%,#7c2d12 130%);color:#fff;padding:44px 0 40px}
+  .hero h1{font-size:2.3rem;line-height:1.15;max-width:640px}
+  .hero h1 em{color:#fbbf24;font-style:normal}
+  .hero p{margin:12px 0 22px;font-size:1.08rem;color:#e9f5ec;max-width:560px}
+  .searchbar{display:flex;gap:8px;background:#fff;border-radius:999px;padding:6px;max-width:620px;box-shadow:var(--shadow)}
+  .searchbar input{flex:1;border:none;outline:none;padding:10px 16px;border-radius:999px;color:var(--ink);min-width:0}
+  .searchbar button{background:var(--terra);color:#fff;border:none;border-radius:999px;padding:10px 22px;font-weight:bold}
+  .searchbar button:hover{background:var(--terra2)}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .chips span{font-size:.85rem;color:#d1fae5;align-self:center}
+  .chip{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;padding:6px 14px;font-size:.88rem}
+  .chip:hover,.chip.active{background:#fbbf24;color:#14532d;border-color:#fbbf24;font-weight:bold}
+  .hero-stats{display:flex;gap:26px;margin-top:26px;flex-wrap:wrap}
+  .hero-stats div b{display:block;font-size:1.3rem;color:#fbbf24}
+  .hero-stats div{font-size:.85rem;color:#d1fae5}
+
+  /* Sections */
+  section{padding:36px 0 8px}
+  .sec-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .sec-head h2{font-size:1.55rem;color:var(--green)}
+  .sec-head p{color:var(--muted);font-size:.95rem}
+  .sec-head .spacer{flex:1}
+  .count-label{color:var(--muted);font-size:.92rem}
+
+  /* Cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-top:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 10px rgba(20,60,35,.06);transition:transform .18s ease,box-shadow .18s ease;display:flex;flex-direction:column}
+  .card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+  .card-art{position:relative;height:150px}
+  .card-art svg{width:100%;height:100%;display:block}
+  .fav{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.92);font-size:1.05rem;line-height:1;color:#9ca3af;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+  .fav.on{color:#dc2626}
+  .pts-badge{position:absolute;left:10px;bottom:10px;background:rgba(5,46,22,.88);color:#fbbf24;border-radius:999px;padding:4px 11px;font-size:.83rem;font-weight:bold}
+  .card-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .card-title{font-size:1.08rem;font-weight:bold;color:var(--ink)}
+  .card-loc{color:var(--muted);font-size:.9rem}
+  .host-row{display:flex;align-items:center;gap:7px;font-size:.9rem}
+  .avatar{width:26px;height:26px;border-radius:50%;background:var(--green2);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:bold;flex:none}
+  .verified{background:#dcfce7;color:#166534;border:1px solid #86efac;border-radius:999px;padding:1px 8px;font-size:.72rem;font-weight:bold}
+  .rating{margin-left:auto;color:var(--gold);font-weight:bold;font-size:.9rem}
+  .specs{color:var(--muted);font-size:.88rem}
+  .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .tag{background:var(--cream2);border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:.75rem;color:#57534e}
+  .avail{font-size:.85rem;color:var(--green2)}
+  .card-actions{margin-top:auto;padding-top:6px}
+  .btn{display:inline-block;border:none;border-radius:999px;padding:10px 18px;font-weight:bold;font-size:.95rem;text-decoration:none;text-align:center}
+  .btn-terra{background:var(--terra);color:#fff;width:100%}
+  .btn-terra:hover{background:var(--terra2)}
+  .btn-green{background:var(--green);color:#fff}
+  .btn-green:hover{background:var(--green2)}
+  .btn-ghost{background:transparent;border:1.5px solid var(--green);color:var(--green)}
+  .btn-ghost:hover{background:#dcfce7}
+  .empty{background:#fff;border:1.5px dashed var(--line);border-radius:var(--radius);padding:28px;text-align:center;color:var(--muted);margin-top:16px}
+
+  /* Two-col info bands */
+  .band{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:0 2px 10px rgba(20,60,35,.05)}
+  .panel h3{color:var(--green);font-size:1.2rem;margin-bottom:10px}
+  .panel p,.panel li{font-size:.96rem;color:#374151}
+  .panel ul{margin:8px 0 0 18px}
+  .panel li{margin:6px 0}
+  .profile-card{background:linear-gradient(150deg,#14532d,#166534);color:#fff;border:none}
+  .profile-card h3{color:#fbbf24}
+  .profile-card p{color:#e9f5ec}
+  .balance{font-size:2.1rem;font-weight:bold;color:#fff;margin:4px 0}
+  .balance small{font-size:.95rem;color:#bbf7d0;font-weight:normal}
+  .trust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:16px}
+  .trust-item{background:#fff;border:1px solid var(--line);border-left:5px solid var(--terra);border-radius:12px;padding:16px}
+  .trust-item h4{color:var(--green);margin-bottom:5px;font-size:1.02rem}
+  .trust-item p{font-size:.9rem;color:var(--muted)}
+
+  /* Membership */
+  .plans{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px}
+  .plan{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:24px;position:relative}
+  .plan.plus{border-color:var(--terra);box-shadow:var(--shadow)}
+  .plan .ribbon{position:absolute;top:-12px;right:18px;background:var(--terra);color:#fff;font-size:.75rem;font-weight:bold;border-radius:999px;padding:3px 12px}
+  .plan h3{font-size:1.25rem;color:var(--green)}
+  .price{font-size:1.7rem;font-weight:bold;margin:6px 0}
+  .price small{font-size:.9rem;color:var(--muted);font-weight:normal}
+  .plan ul{margin:10px 0 18px 18px;color:#374151;font-size:.95rem}
+  .plan li{margin:5px 0}
+
+  /* Forms */
+  form .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  label{display:block;font-size:.88rem;font-weight:bold;color:var(--green);margin:10px 0 4px}
+  input[type=text],input[type=number],input[type=date],select,textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;color:var(--ink)}
+  textarea{resize:vertical;min-height:80px}
+  .checkrow{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
+  .checkrow label{font-weight:normal;color:var(--ink);display:flex;gap:6px;align-items:center;margin:0}
+
+  /* Modal */
+  .overlay{position:fixed;inset:0;background:rgba(10,25,15,.62);display:none;align-items:flex-start;justify-content:center;z-index:80;overflow-y:auto;padding:18px 10px}
+  .overlay.open{display:flex}
+  .modal{background:var(--cream);border-radius:20px;max-width:680px;width:100%;padding:0 0 24px;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:pop .18s ease}
+  @keyframes pop{from{transform:scale(.97);opacity:.5}to{transform:scale(1);opacity:1}}
+  .modal-art{height:210px;border-radius:20px 20px 0 0;overflow:hidden;position:relative}
+  .modal-art svg{width:100%;height:100%;display:block}
+  .modal-x{position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.94);font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+  .modal-in{padding:18px 22px 0}
+  .modal-in h2{font-size:1.45rem;color:var(--ink)}
+  .host-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0;display:flex;gap:12px;align-items:flex-start}
+  .host-card .avatar{width:44px;height:44px;font-size:1.05rem}
+  .host-card small{color:var(--muted);display:block;font-size:.85rem}
+  .calc{background:#fff;border:1px dashed var(--terra);border-radius:12px;padding:14px 16px;margin:14px 0}
+  .calc .total{font-size:1.15rem;font-weight:bold;color:var(--terra)}
+  .mode-tabs{display:flex;gap:8px;margin:14px 0 4px}
+  .mode-tabs button{flex:1;border:1.5px solid var(--green);background:#fff;color:var(--green);border-radius:999px;padding:9px;font-weight:bold}
+  .mode-tabs button.active{background:var(--green);color:#fff}
+  .rules{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:.92rem;color:#374151}
+  .rules li{margin:4px 0 4px 18px}
+
+  /* Trips */
+  .trip{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px}
+  .trip b{color:var(--ink)}
+  .trip .meta{color:var(--muted);font-size:.9rem}
+  .status{margin-left:auto;border-radius:999px;padding:4px 12px;font-size:.8rem;font-weight:bold;background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
+
+  footer{background:var(--green);color:#d1fae5;margin-top:44px;padding:28px 0}
+  footer .wrap{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  footer b{color:#fff}
+  footer small{color:#a7c4ae}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#052e16;color:#fff;padding:13px 22px;border-radius:999px;font-size:.95rem;box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:all .25s ease;z-index:99;max-width:92vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .hidden{display:none!important}
+
+  @media (max-width:760px){
+    .band,.plans,form .row{grid-template-columns:1fr}
+    .hero h1{font-size:1.8rem}
+    .header-in{gap:8px}
+    nav{margin-left:0}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-in">
+    <a class="logo" href="#" onclick="showView('home');return false;">Swap<span>Ghar</span></a>
+    <div class="points-pill">★ <b id="pointsBalance">1,000</b> pts</div>
+    <nav>
+      <button data-nav="home" class="active" onclick="showView('home')">Explore homes</button>
+      <button data-nav="list" onclick="showView('list')">List your home</button>
+      <button data-nav="trips" onclick="showView('trips')">My Trips</button>
+      <button data-nav="plus" onclick="showView('plus')">Membership</button>
+    </nav>
+  </div>
+</header>
+
+<main id="view-home">
+  <!-- HERO -->
+  <div class="hero">
+    <div class="wrap">
+      <h1>Swap homes. <em>Skip the hotel bill.</em></h1>
+      <p>India's home-exchange community. Stay in real homes across the country, hosted by verified members — and pay with points, not hotel bills.</p>
+      <form class="searchbar" onsubmit="applySearch(event)">
+        <input type="text" id="searchInput" placeholder="Search a city or locality — try 'Goa' or 'Indiranagar'…">
+        <button type="submit">Search</button>
+      </form>
+      <div class="chips" id="cityChips">
+        <span>Popular:</span>
+      </div>
+      <div class="hero-stats">
+        <div><b>10,000+</b>verified members</div>
+        <div><b>40+</b>cities across India</div>
+        <div><b>₹10 lakh</b>home protection cover</div>
+        <div><b>₹0</b>hotel bills, ever</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTINGS -->
+  <section class="wrap">
+    <div class="sec-head">
+      <h2>Homes open for exchange</h2>
+      <div class="spacer"></div>
+      <span class="count-label" id="resultCount"></span>
+    </div>
+    <p style="color:var(--muted)">Every host is ID-verified. Swap simultaneously, or spend points and travel whenever you like.</p>
+    <div class="grid" id="listingsGrid"></div>
+    <div class="empty hidden" id="noResults">No homes match that search yet. Try a city name like Goa, Mumbai or Hyderabad.</div>
+  </section>
+
+  <!-- POINTS + PROFILE -->
+  <section class="wrap">
+    <div class="sec-head"><h2>Your points wallet</h2></div>
+    <div class="band">
+      <div class="panel profile-card">
+        <h3>Namaste, Vikranth</h3>
+        <p>Member since 2026 · Govt ID verified · Phone verified</p>
+        <div class="balance"><span id="pointsBalance2">1,000</span> <small>points available</small></div>
+        <p>That's roughly <b style="color:#fbbf24">₹10,000</b> worth of stays — about 8 nights in a typical SwapGhar home.</p>
+      </div>
+      <div class="panel">
+        <h3>How points work</h3>
+        <ul>
+          <li><b>Earn</b> points every night a guest stays at your home.</li>
+          <li><b>Spend</b> points to stay at any member's home — no need to swap at the same time, or even with the same person.</li>
+          <li><b>1 point ≈ ₹10</b> of stay value, so a 120-point night feels like a ₹1,200 hotel room — without the bill.</li>
+          <li>Points never expire while your membership is active.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST -->
+  <section class="wrap">
+    <div class="sec-head"><h2>Trust &amp; safety, front and centre</h2></div>
+    <div class="trust-grid">
+      <div class="trust-item"><h4>🪪 Govt ID verification</h4><p>Every member verifies a government ID and phone number before they can host or travel. No ID, no swaps.</p></div>
+      <div class="trust-item"><h4>🛡️ ₹10 lakh home protection</h4><p>Every confirmed exchange is covered by platform home-protection cover up to ₹10 lakh for accidental damage.</p></div>
+      <div class="trust-item"><h4>⭐ Verified reviews</h4><p>Reviews can only be left after a completed stay, by real exchange partners — no bought ratings.</p></div>
+      <div class="trust-item"><h4>💬 Secure messaging</h4><p>Chat stays inside SwapGhar until a swap is confirmed. Personal numbers are never shown publicly.</p></div>
+    </div>
+  </section>
+</main>
+
+<!-- LIST YOUR HOME -->
+<main id="view-list" class="hidden">
+  <section class="wrap">
+    <div class="sec-head"><h2>List your home</h2></div>
+    <p style="color:var(--muted)">Tell travellers what your home offers. It goes live in the listings instantly, and becomes your home to offer in simultaneous swaps.</p>
+    <div class="panel" style="margin-top:16px;max-width:720px">
+      <form onsubmit="submitListing(event)">
+        <label>Home title</label>
+        <input type="text" id="fTitle" required placeholder="e.g. Sunny 2BHK near the lake">
+        <div class="row">
+          <div><label>City</label>
+            <select id="fCity" required>
+              <option>Mumbai</option><option>Goa</option><option>Bengaluru</option>
+              <option>Hyderabad</option><option>Delhi</option><option>Jaipur</option>
+              <option>Kochi</option><option>Pune</option>
+            </select></div>
+          <div><label>Area / locality</label>
+            <input type="text" id="fArea" required placeholder="e.g. Bandra West"></div>
+        </div>
+        <div class="row">
+          <div><label>Guests</label><input type="number" id="fGuests" min="1" max="16" value="4" required></div>
+          <div><label>Bedrooms</label><input type="number" id="fBeds" min="0" max="10" value="2" required></div>
+        </div>
+        <div class="row">
+          <div><label>Bathrooms</label><input type="number" id="fBaths" min="1" max="8" value="2" required></div>
+          <div><label>Points per night</label><input type="number" id="fPoints" min="10" max="2000" value="120" required></div>
+        </div>
+        <label>Amenities</label>
+        <div class="checkrow" id="fAmenities">
+          <label><input type="checkbox" value="Wi-Fi" checked> Wi-Fi</label>
+          <label><input type="checkbox" value="AC"> AC</label>
+          <label><input type="checkbox" value="Kitchen" checked> Kitchen</label>
+          <label><input type="checkbox" value="Parking"> Parking</label>
+          <label><input type="checkbox" value="Washing machine"> Washing machine</label>
+          <label><input type="checkbox" value="Pet friendly"> Pet friendly</label>
+          <label><input type="checkbox" value="Workspace"> Workspace</label>
+          <label><input type="checkbox" value="Pool"> Pool</label>
+        </div>
+        <label>Description</label>
+        <textarea id="fDesc" placeholder="What makes your home special? Light, quiet, the view, the neighbourhood…"></textarea>
+        <div style="margin-top:16px"><button class="btn btn-terra" type="submit" style="width:auto;padding:11px 26px">Publish my home</button></div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<!-- MY TRIPS -->
+<main id="view-trips" class="hidden">
+  <section class="wrap">
+    <div class="sec-head"><h2>My Trips</h2></div>
+    <p style="color:var(--muted)">Exchange requests you've sent. Hosts usually reply within a day.</p>
+    <div id="tripsList"></div>
+    <div class="empty" id="noTrips">No trips yet. Find a home you like and send your first exchange request.</div>
+  </section>
+</main>
+
+<!-- MEMBERSHIP -->
+<main id="view-plus" class="hidden">
+  <section class="wrap">
+    <div class="sec-head"><h2>Membership</h2></div>
+    <p style="color:var(--muted)">Start free. Upgrade when the travel bug bites.</p>
+    <div class="plans">
+      <div class="plan">
+        <h3>Free</h3>
+        <div class="price">₹0 <small>forever</small></div>
+        <ul>
+          <li>Browse all homes</li>
+          <li>1 active listing</li>
+          <li>Pay a small service fee per confirmed swap</li>
+          <li>Standard support</li>
+        </ul>
+        <button class="btn btn-ghost" onclick="joinPlan('Free')">Join free</button>
+      </div>
+      <div class="plan plus">
+        <div class="ribbon">MOST POPULAR</div>
+        <h3>SwapGhar Plus</h3>
+        <div class="price">₹4,999 <small>/ year</small></div>
+        <ul>
+          <li>Unlimited swaps, no per-swap service fee</li>
+          <li>Unlimited listings</li>
+          <li>₹10 lakh home protection included</li>
+          <li>Priority support, 7 days a week</li>
+        </ul>
+        <button class="btn btn-terra" style="width:auto;padding:10px 22px" onclick="joinPlan('Plus')">Join Plus</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><b>SwapGhar</b> — Home Exchange for India.<br><small>Swap homes. Skip the hotel bill.</small></div>
+    <div style="margin-left:auto"><small>Demo build · Points and prices are illustrative · Made in India 🇮🇳</small></div>
+  </div>
+</footer>
+
+<!-- LISTING MODAL -->
+<div class="overlay" id="overlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal" id="modalBox"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- SwapGhar app ---------------- */
+const LS_KEY = 'swapghar_v1';
+const CITIES = ['Mumbai','Goa','Bengaluru','Hyderabad','Delhi','Jaipur','Kochi','Pune'];
+const PALETTES = {
+  Mumbai:['#fde68a','#f59e0b','#92400e'], Goa:['#a7f3d0','#34d399','#065f46'],
+  Bengaluru:['#bbf7d0','#4ade80','#14532d'], Hyderabad:['#fde68a','#fb923c','#9a3412'],
+  Delhi:['#fecaca','#f87171','#7f1d1d'], Jaipur:['#fbcfe8','#f472b6','#831843'],
+  Kochi:['#bae6fd','#38bdf8','#075985'], Pune:['#ddd6fe','#a78bfa','#4c1d95']
+};
+
+function sceneSVG(city, seed){
+  const p = PALETTES[city] || PALETTES.Mumbai;
+  let rnd = seed * 7919;
+  const rand = () => { rnd = (rnd * 9301 + 49297) % 233280; return rnd / 233280; };
+  let buildings = '';
+  let x = 6;
+  while (x < 380){
+    const w = 26 + rand() * 34, h = 44 + rand() * 66;
+    const shade = rand() > .5 ? p[1] : p[2];
+    buildings += `<rect x="${x.toFixed(0)}" y="${(150-h).toFixed(0)}" width="${w.toFixed(0)}" height="${h.toFixed(0)}" rx="3" fill="${shade}" opacity="${(0.75+rand()*0.25).toFixed(2)}"/>`;
+    for (let wy = 0; wy < 3; wy++) for (let wx = 0; wx < 2; wx++)
+      if (rand() > .45) buildings += `<rect x="${(x+6+wx*(w/2)).toFixed(0)}" y="${(158-h+wy*20).toFixed(0)}" width="6" height="8" fill="#fef3c7" opacity=".9"/>`;
+    x += w + 7;
+  }
+  let motif = '';
+  if (city === 'Goa'){
+    motif = `<path d="M0 128 Q100 118 200 128 T400 128 V160 H0 Z" fill="#38bdf8" opacity=".8"/>
+      <path d="M52 128 q4-34 22-44 M58 126 q-14-24-30-28 M60 127 q16-20 34-20" stroke="#065f46" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M338 130 q4-30 20-40 M344 128 q-12-22-28-26 M346 129 q14-18 30-18" stroke="#065f46" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  } else if (city === 'Hyderabad'){
+    motif = `<g fill="${p[2]}"><rect x="176" y="66" width="8" height="60"/><rect x="216" y="66" width="8" height="60"/>
+      <path d="M168 128 v-34 a32 26 0 0 1 64 0 v34 h-18 v-26 a14 12 0 0 0 -28 0 v26 Z"/></g>`;
+  } else if (city === 'Jaipur'){
+    motif = `<path d="M0 132 L90 96 L190 120 L300 92 L400 126 V160 H0 Z" fill="${p[2]}" opacity=".55"/>
+      <rect x="150" y="84" width="100" height="16" rx="2" fill="${p[2]}" opacity=".8"/>`;
+  } else if (city === 'Kochi'){
+    motif = `<path d="M0 132 Q100 124 200 132 T400 132 V160 H0 Z" fill="#0284c7" opacity=".85"/>
+      <path d="M120 130 L176 96 L176 130 Z" fill="none" stroke="#075985" stroke-width="4"/>
+      <path d="M252 138 q26 10 52 0 l-8 12 h-36 Z" fill="#075985"/>`;
+  } else if (city === 'Delhi'){
+    motif = `<path d="M186 128 v-44 a14 14 0 0 1 28 0 v44 Z" fill="${p[2]}" opacity=".9"/><rect x="196" y="58" width="8" height="16" fill="${p[2]}"/>`;
+  }
+  return `<svg viewBox="0 0 400 160" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${city} illustration">
+    <rect width="400" height="160" fill="${p[0]}"/>
+    <circle cx="${60+seed*23%300}" cy="34" r="17" fill="#fff7ed" opacity=".95"/>
+    <circle cx="${66+seed*23%300}" cy="34" r="24" fill="#fff7ed" opacity=".3"/>
+    ${motif}${buildings}
+    <rect y="148" width="400" height="12" fill="#14532d" opacity=".28"/>
+    <path d="M170 148 l30-34 30 34 Z" fill="#14532d"/><rect x="192" y="128" width="16" height="20" fill="#14532d"/>
+  </svg>`;
+}
+
+const SEED = [
+ {id:'h1', title:'Sea-facing 2BHK in Bandra', city:'Mumbai', area:'Bandra West', host:'Priya', guests:4, beds:2, baths:2, pts:150, rating:4.9, reviews:32, amenities:['Wi-Fi','AC','Kitchen','Sea view','Lift'], avail:'Open Nov – Jan', since:2023, seed:3,
+  desc:'Bright corner flat with a balcony over the Bandra promenade. Carter Road cafes are a two-minute stroll, and the evening sea breeze does the air-conditioning half the year.', rules:['No parties or loud music after 10 PM','Water the balcony plants, please','Shoes off inside']},
+ {id:'h2', title:'Portuguese villa with a plunge pool', city:'Goa', area:'Assagao', host:'Rohan', guests:6, beds:3, baths:3, pts:220, rating:5.0, reviews:41, amenities:['Pool','Wi-Fi','Kitchen','Parking','Pet friendly'], avail:'Open most weekends', since:2022, seed:7,
+  desc:'A 120-year-old Portuguese villa down a quiet Assagao lane — thick walls, a plunge pool under a mango tree, and beaches ten minutes in every direction.', rules:['Pool closes at 9 PM','No smoking indoors','Beach towels provided — bring them back sandy, not missing']},
+ {id:'h3', title:'Garden apartment in Indiranagar', city:'Bengaluru', area:'Indiranagar', host:'Ananya', guests:3, beds:1, baths:1, pts:110, rating:4.8, reviews:19, amenities:['Wi-Fi','Workspace','Kitchen','Metro nearby'], avail:'Open Dec onwards', since:2024, seed:5,
+  desc:'Leafy first-floor flat on a tree-lined Indiranagar street. Breweries, bookstores and the metro are all within walking distance; the balcony faces a rain tree.', rules:['Quiet building — keep balcony chats low after 11 PM','Segregate waste (the building is strict!)']},
+ {id:'h4', title:'Sunny flat near Charminar old city', city:'Hyderabad', area:'Banjara Hills', host:'Vikram', guests:5, beds:2, baths:2, pts:120, rating:4.9, reviews:27, amenities:['Wi-Fi','AC','Kitchen','Parking','Workspace'], avail:'Open Nov – Feb', since:2023, seed:9,
+  desc:'A sun-washed Banjara Hills apartment, fifteen minutes from the old city. Biryani recommendations come free with the keys — the host keeps a ranked list on the fridge.', rules:['No parties','Please lock the terrace door at night']},
+ {id:'h5', title:'Heritage haveli stay in Hauz Khas', city:'Delhi', area:'Hauz Khas Village', host:'Meera', guests:4, beds:2, baths:2, pts:160, rating:4.7, reviews:23, amenities:['Wi-Fi','AC','Lake view','Kitchen'], avail:'Open winter months', since:2022, seed:11,
+  desc:'Top floor of a family haveli overlooking Hauz Khas lake and the old madrasa ruins. Deer Park at dawn, village cafes by night.', rules:['Heritage building — no nails or tape on walls','Stairs only, no lift']},
+ {id:'h6', title:'Pink-city courtyard home', city:'Jaipur', area:'C-Scheme', host:'Kabir', guests:6, beds:3, baths:2, pts:100, rating:4.8, reviews:17, amenities:['Wi-Fi','Courtyard','Kitchen','Parking'], avail:'Open Nov – Mar', since:2024, seed:13,
+  desc:'A rose-pink courtyard house in C-Scheme with a peepal tree at its centre. The bazaars of the old city are a short auto ride away; breakfast chai is on the terrace.', rules:['Courtyard is shared with the host family wing','Hot water is solar — best before noon']},
+ {id:'h7', title:'Backwater-view home in Fort Kochi', city:'Kochi', area:'Fort Kochi', host:'Divya', guests:4, beds:2, baths:1, pts:95, rating:4.9, reviews:21, amenities:['Wi-Fi','Kitchen','Sea view','Bicycles'], avail:'Open Dec – Feb', since:2023, seed:17,
+  desc:'Whitewashed Fort Kochi home facing the Chinese fishing nets. Two bicycles included; the fish market and Kathakali centre are around the corner.', rules:['Bicycles back by 8 PM','Monsoon months: expect dramatic rain, plan indoors']},
+ {id:'h8', title:'High-rise 3BHK in Koregaon Park', city:'Pune', area:'Koregaon Park', host:'Arjun', guests:6, beds:3, baths:3, pts:130, rating:4.6, reviews:14, amenities:['Wi-Fi','AC','Gym','Pool','Parking'], avail:'Open most dates', since:2024, seed:19,
+  desc:'18th-floor flat with the whole of Koregaon Park below and the hills beyond. Society gym and pool access included in the swap.', rules:['Register guests at the society desk','Gym shoes mandatory in the gym']},
+ {id:'h9', title:'Cosy studio near Powai lake', city:'Mumbai', area:'Powai', host:'Sneha', guests:2, beds:1, baths:1, pts:85, rating:4.7, reviews:12, amenities:['Wi-Fi','Workspace','Lake view'], avail:'Open weekends', since:2025, seed:23,
+  desc:'A compact, calm studio over Powai lake — perfect base for a Mumbai workation. The lakeside promenade at sunset is the house special.', rules:['One couple or solo traveller only','Work desk faces the lake — enjoy']},
+ {id:'h10', title:'Beach cottage in Baga', city:'Goa', area:'Baga', host:'Joseph', guests:5, beds:2, baths:2, pts:180, rating:4.8, reviews:29, amenities:['Wi-Fi','Kitchen','Parking','Beach 200m'], avail:'Open Nov – Apr', since:2022, seed:29,
+  desc:'A white-and-blue Goan cottage two hundred metres from Baga beach. Hammock on the porch, outdoor shower, and a susegad pace of life guaranteed.', rules:['Rinse beach sand off outside','Quiet lane — music indoors after 11 PM']},
+ {id:'h11', title:'Lake-view home in Whitefield', city:'Bengaluru', area:'Whitefield', host:'Rahul', guests:5, beds:3, baths:2, pts:105, rating:4.6, reviews:11, amenities:['Wi-Fi','Kitchen','Parking','Washing machine'], avail:'Open Dec onwards', since:2025, seed:31,
+  desc:'Family home in a gated Whitefield layout facing Varthur lake. Ideal for a Bengaluru family trip or a slow workation with space to spread out.', rules:['Community quiet hours 10 PM – 6 AM','Car parking for one vehicle']},
+ {id:'h12', title:'Old-city apartment near Laad Bazaar', city:'Hyderabad', area:'Charminar', host:'Farah', guests:3, beds:1, baths:1, pts:75, rating:4.7, reviews:9, amenities:['Wi-Fi','AC','Kitchen'], avail:'Open most dates', since:2024, seed:37,
+  desc:'Stay inside the living old city — Charminar, Laad Bazaar and Nimrah chai all within a rickshaw hop. Compact, characterful, unforgettable.', rules:['Old-city lanes are narrow — travel light','Respect prayer hours in the neighbourhood']}
+];
+
+let state = load();
+function load(){
+  try{
+    const s = JSON.parse(localStorage.getItem(LS_KEY));
+    if (s && Array.isArray(s.listings)) return s;
+  }catch(e){}
+  return { points:1000, listings:SEED.slice(), favs:[], trips:[], myHomes:[], filter:'All', query:'' };
+}
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+const fmt = n => n.toLocaleString('en-IN');
+const $ = id => document.getElementById(id);
+
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('show'), 3200);
+}
+function syncPoints(){
+  $('pointsBalance').textContent = fmt(state.points);
+  $('pointsBalance2').textContent = fmt(state.points);
+}
+
+/* ---------- views ---------- */
+function showView(v){
+  ['home','list','trips','plus'].forEach(x => $('view-'+x).classList.toggle('hidden', x!==v));
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.nav===v));
+  if (v==='trips') renderTrips();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ---------- chips + search ---------- */
+function renderChips(){
+  const c = $('cityChips');
+  c.innerHTML = '<span>Popular:</span>';
+  ['All',...CITIES].forEach(city=>{
+    const b = document.createElement('button');
+    b.className = 'chip' + (state.filter===city ? ' active':'');
+    b.textContent = city==='All' ? 'All India' : city;
+    b.onclick = ()=>{ state.filter = city; state.query=''; $('searchInput').value=''; save(); renderChips(); renderListings(); };
+    c.appendChild(b);
+  });
+}
+function applySearch(e){
+  e.preventDefault();
+  state.query = $('searchInput').value.trim().toLowerCase();
+  state.filter = 'All'; save(); renderChips(); renderListings();
+  document.getElementById('listingsGrid').scrollIntoView({behavior:'smooth'});
+}
+
+/* ---------- listings ---------- */
+function filtered(){
+  return state.listings.filter(h=>{
+    if (state.filter!=='All' && h.city!==state.filter) return false;
+    if (state.query){
+      const hay = (h.title+' '+h.city+' '+h.area).toLowerCase();
+      if (!hay.includes(state.query)) return false;
+    }
+    return true;
+  });
+}
+function renderListings(){
+  const list = filtered();
+  $('resultCount').textContent = list.length + (list.length===1?' home':' homes');
+  $('noResults').classList.toggle('hidden', list.length>0);
+  $('listingsGrid').innerHTML = list.map(h=>{
+    const fav = state.favs.includes(h.id);
+    return `<article class="card">
+      <div class="card-art">${sceneSVG(h.city, h.seed)}
+        <button class="fav ${fav?'on':''}" onclick="toggleFav('${h.id}')" aria-label="Save to favourites">${fav?'♥':'♡'}</button>
+        <span class="pts-badge">${h.pts} pts / night</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${h.title}</div>
+        <div class="card-loc">📍 ${h.area}, ${h.city}</div>
+        <div class="host-row"><span class="avatar">${h.host[0]}</span> ${h.host} <span class="verified">✓ Verified</span><span class="rating">★ ${h.rating.toFixed(1)} (${h.reviews})</span></div>
+        <div class="specs">👥 ${h.guests} guests · 🛏 ${h.beds} bed · 🚿 ${h.baths} bath</div>
+        <div class="tags">${h.amenities.slice(0,4).map(a=>`<span class="tag">${a}</span>`).join('')}</div>
+        <div class="avail">🗓 ${h.avail}</div>
+        <div class="card-actions"><button class="btn btn-terra" onclick="openListing('${h.id}')">View &amp; request swap</button></div>
+      </div>
+    </article>`;
+  }).join('');
+}
+function toggleFav(id){
+  const i = state.favs.indexOf(id);
+  if (i>=0){ state.favs.splice(i,1); toast('Removed from favourites'); }
+  else { state.favs.push(id); toast('Saved to favourites ♥'); }
+  save(); renderListings();
+}
+
+/* ---------- modal ---------- */
+let current = null, mode = 'points';
+function openListing(id){
+  current = state.listings.find(h=>h.id===id); mode='points';
+  const mine = state.myHomes.map(mid=>state.listings.find(h=>h.id===mid)).filter(Boolean);
+  $('modalBox').innerHTML = `
+    <div class="modal-art">${sceneSVG(current.city, current.seed)}
+      <button class="modal-x" onclick="closeModal()" aria-label="Close">✕</button></div>
+    <div class="modal-in">
+      <h2>${current.title}</h2>
+      <div class="card-loc">📍 ${current.area}, ${current.city} · ★ ${current.rating.toFixed(1)} (${current.reviews} verified reviews)</div>
+      <div class="specs" style="margin-top:6px">👥 ${current.guests} guests · 🛏 ${current.beds} bedrooms · 🚿 ${current.baths} bathrooms</div>
+      <div class="tags" style="margin-top:8px">${current.amenities.map(a=>`<span class="tag">${a}</span>`).join('')}</div>
+      <p style="margin-top:12px">${current.desc}</p>
+      <div class="host-card">
+        <span class="avatar">${current.host[0]}</span>
+        <div><b>Hosted by ${current.host}</b> <span class="verified">✓ Verified host</span>
+          <small>🪪 Govt ID verified · 📱 Phone verified · Member since ${current.since}</small>
+          <small>Covered by SwapGhar home protection up to ₹10 lakh</small></div>
+      </div>
+      <b>House rules</b>
+      <ul class="rules">${current.rules.map(r=>`<li>${r}</li>`).join('')}</ul>
+      <div class="calc">
+        <b>Request an exchange</b>
+        <div class="mode-tabs">
+          <button id="modePoints" class="active" onclick="setMode('points')">Points swap</button>
+          <button id="modeSimul" onclick="setMode('simul')">Simultaneous swap</button>
+        </div>
+        <div class="row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div><label>Check-in</label><input type="date" id="dIn" onchange="calc()"></div>
+          <div><label>Check-out</label><input type="date" id="dOut" onchange="calc()"></div>
+        </div>
+        <div id="simulBox" class="hidden">
+          <label>Your home to offer in exchange</label>
+          <select id="offerHome">
+            ${mine.length ? mine.map(h=>`<option value="${h.id}">${h.title} (${h.city})</option>`).join('') : '<option value="">— list your home first —</option>'}
+          </select>
+        </div>
+        <p id="calcLine" style="margin-top:10px">Pick dates to see the total.</p>
+        <div style="margin-top:12px"><button class="btn btn-terra" style="width:auto;padding:11px 26px" onclick="submitRequest()">Send exchange request</button></div>
+      </div>
+    </div>`;
+  // sensible default dates: +14 days, 3 nights
+  const d1 = new Date(Date.now()+14*864e5), d2 = new Date(Date.now()+17*864e5);
+  $('dIn').value = d1.toISOString().slice(0,10);
+  $('dOut').value = d2.toISOString().slice(0,10);
+  $('overlay').classList.add('open');
+  calc();
+}
+function closeModal(){ $('overlay').classList.remove('open'); }
+function setMode(m){
+  mode = m;
+  $('modePoints').classList.toggle('active', m==='points');
+  $('modeSimul').classList.toggle('active', m==='simul');
+  $('simulBox').classList.toggle('hidden', m!=='simul');
+  calc();
+}
+function nights(){
+  const a = new Date($('dIn').value), b = new Date($('dOut').value);
+  const n = Math.round((b-a)/864e5);
+  return isNaN(n) ? 0 : n;
+}
+function calc(){
+  const n = nights(), line = $('calcLine');
+  if (!current) return;
+  if (n<=0){ line.innerHTML = 'Pick a check-out date after check-in.'; return; }
+  if (mode==='points'){
+    const total = n*current.pts;
+    line.innerHTML = `${n} night${n>1?'s':''} × ${current.pts} pts = <span class="total">${fmt(total)} pts</span> &nbsp;·&nbsp; your balance after: ${fmt(state.points-total)} pts`;
+  } else {
+    line.innerHTML = `${n} night${n>1?'s':''} · <span class="total">0 pts</span> — you host ${current.host} at your home for the same dates.`;
+  }
+}
+function submitRequest(){
+  const n = nights();
+  if (n<=0){ toast('Please pick valid dates first'); return; }
+  if (mode==='points'){
+    const total = n*current.pts;
+    if (total > state.points){ toast('Not enough points — you need '+fmt(total)+' pts'); return; }
+    state.points -= total;
+    state.trips.unshift({homeId:current.id, title:current.title, city:current.city, checkin:$('dIn').value, checkout:$('dOut').value, nights:n, mode:'Points swap', detail:fmt(total)+' pts', status:'Request sent'});
+  } else {
+    const offerId = $('offerHome').value;
+    if (!offerId){ toast('List your home first to offer a simultaneous swap'); return; }
+    const offer = state.listings.find(h=>h.id===offerId);
+    state.trips.unshift({homeId:current.id, title:current.title, city:current.city, checkin:$('dIn').value, checkout:$('dOut').value, nights:n, mode:'Simultaneous swap', detail:'Offering: '+offer.title, status:'Request sent'});
+  }
+  save(); syncPoints(); closeModal();
+  toast('Request sent to '+current.host+' — find it in My Trips');
+  showView('trips');
+}
+
+/* ---------- trips ---------- */
+function renderTrips(){
+  $('noTrips').classList.toggle('hidden', state.trips.length>0);
+  $('tripsList').innerHTML = state.trips.map(t=>`
+    <div class="trip">
+      <div><b>${t.title}</b> · ${t.city}<br>
+      <span class="meta">${t.checkin} → ${t.checkout} · ${t.nights} night${t.nights>1?'s':''} · ${t.mode} · ${t.detail}</span></div>
+      <span class="status">${t.status}</span>
+    </div>`).join('');
+}
+
+/* ---------- list your home ---------- */
+function submitListing(e){
+  e.preventDefault();
+  const am = Array.from(document.querySelectorAll('#fAmenities input:checked')).map(i=>i.value);
+  const id = 'mine' + Date.now();
+  const h = { id, title:$('fTitle').value.trim(), city:$('fCity').value, area:$('fArea').value.trim(),
+    host:'Vikranth', guests:+$('fGuests').value, beds:+$('fBeds').value, baths:+$('fBaths').value,
+    pts:+$('fPoints').value, rating:5.0, reviews:0, amenities:am.length?am:['Wi-Fi'], avail:'Open now', since:2026,
+    seed:(Date.now()%89)+3, desc:$('fDesc').value.trim() || 'A welcoming SwapGhar home listed by Vikranth.',
+    rules:['No parties','Leave it as you found it'] };
+  state.listings.unshift(h);
+  state.myHomes.push(id);
+  state.filter = 'All'; state.query='';
+  save(); renderChips(); renderListings();
+  toast('Your home is live — happy hosting!');
+  showView('home');
+}
+
+/* ---------- membership ---------- */
+function joinPlan(p){
+  toast(p==='Plus' ? 'Membership is illustrative in this demo — no payment taken' : 'You are on the Free plan — membership is illustrative in this demo');
+}
+
+/* ---------- init ---------- */
+renderChips(); renderListings(); syncPoints(); renderTrips();
+</script>
+</body>
+</html>
