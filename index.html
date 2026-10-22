@@ -165,8 +165,332 @@
     nav{margin-left:0}
   }
 </style>
+<style id="ui-treatment">
+/* ============ UI TREATMENT — portfolio design system applied (see ~/workspace/ui_treatment/DESIGN_SYSTEM.md) ============ */
+  :root{
+    --font-display:"Avenir Next","Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,"Roboto Mono",monospace;
+    --ease:cubic-bezier(.2,.75,.15,1);
+    --shadow-card:0 2px 6px rgba(20,60,35,.05),0 22px 44px -24px rgba(20,60,35,.30);
+    --shadow-lift:0 4px 10px rgba(20,60,35,.06),0 36px 64px -24px rgba(20,60,35,.40);
+  }
+  body{
+    font-family:var(--font-body);
+    background:
+      radial-gradient(1100px 520px at 90% -5%, rgba(251,191,36,.10), transparent 60%),
+      radial-gradient(900px 480px at -12% 0%, rgba(22,101,52,.07), transparent 55%),
+      var(--cream);
+  }
+  ::selection{background:#fbbf24; color:#231303;}
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-track{background:#efe7d3;}
+  ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#166534,#c2410c); border-radius:99px; border:2px solid #efe7d3;}
+  html{scrollbar-width:thin; scrollbar-color:#166534 #efe7d3;}
+  :focus-visible{outline:2px solid #d97706; outline-offset:2px; border-radius:6px;}
+
+  /* --- display typography --- */
+  .logo, .hero h1, .sec-head h2, .panel h3, .card-title, .price, .balance, .plan h3, .modal-in h2, .hero-stats div b{
+    font-family:var(--font-display); font-weight:800; letter-spacing:-.02em;
+  }
+  .sec-head p, .count-label, .points-pill, .ribbon, .status, .verified, .pts-badge{
+    font-family:var(--font-mono); letter-spacing:.06em;
+  }
+  .count-label{font-size:.8rem; text-transform:uppercase; letter-spacing:.1em;}
+  .balance, .price, .hero-stats div b, .points-pill{font-variant-numeric:tabular-nums;}
+
+  /* --- dark glass sticky header --- */
+  header{
+    background:
+      radial-gradient(circle at 85% -40%, rgba(251,191,36,.16), transparent 55%),
+      linear-gradient(150deg, rgba(4,20,11,.90), rgba(9,43,22,.88) 60%, rgba(5,19,11,.92));
+    -webkit-backdrop-filter:blur(18px) saturate(1.4); backdrop-filter:blur(18px) saturate(1.4);
+    border-bottom:1px solid rgba(255,255,255,.14);
+    box-shadow:0 16px 36px -18px rgba(3,15,8,.6);
+  }
+  .logo{font-size:1.6rem; letter-spacing:-.03em;}
+  nav button{transition:all .25s ease;}
+  nav button:hover{transform:translateY(-1px);}
+  .points-pill{
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.18);
+    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+  }
+
+  /* --- hero: animated gradient mesh --- */
+  .hero{
+    position:relative; overflow:hidden; background-color:#0a2417;
+    background-image:
+      radial-gradient(circle at 78% 6%, rgba(251,191,36,.22), transparent 42%),
+      radial-gradient(circle at 10% 94%, rgba(234,88,12,.24), transparent 48%),
+      radial-gradient(circle at 46% 42%, rgba(74,222,128,.13), transparent 52%),
+      linear-gradient(155deg,#05130b 5%,#14532d 55%,#3a1403 128%);
+    background-size:135% 135%,135% 135%,145% 145%,100% 100%;
+    animation:sgMesh 16s ease-in-out infinite alternate;
+    border-bottom:1px solid rgba(255,255,255,.12);
+  }
+  @keyframes sgMesh{from{background-position:62% 10%,18% 84%,40% 40%,0 0} to{background-position:76% 24%,6% 66%,54% 54%,0 0}}
+  .hero::before{
+    content:""; position:absolute; top:0; left:6%; right:6%; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);
+  }
+  .hero .wrap{position:relative; z-index:1;}
+  .hero h1{font-size:2.75rem; line-height:1.02; letter-spacing:-.03em; max-width:680px;}
+  .hero h1 em{
+    background:linear-gradient(92deg,#fde68a,#f59e0b);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .searchbar{
+    border:1px solid rgba(255,255,255,.55);
+    box-shadow:0 26px 54px -20px rgba(0,0,0,.55);
+    transition:box-shadow .3s ease, transform .3s var(--ease);
+  }
+  .searchbar:focus-within{box-shadow:0 0 0 4px rgba(251,191,36,.35),0 26px 54px -20px rgba(0,0,0,.55); transform:translateY(-1px);}
+  .searchbar button{transition:all .25s ease;}
+  .chip{
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    transition:all .25s var(--ease);
+  }
+  .chip:hover{transform:translateY(-2px);}
+  .hero-stats div b{font-size:1.5rem;}
+
+  /* --- sections rhythm --- */
+  section{padding:46px 0 10px;}
+  .sec-head h2{font-size:1.7rem;}
+
+  /* --- cards & panels: layered shadows + hover lift --- */
+  .card{
+    border:1px solid rgba(20,83,45,.13); box-shadow:var(--shadow-card);
+    transition:transform .5s var(--ease), box-shadow .5s var(--ease);
+  }
+  .card:hover{transform:translateY(-6px); box-shadow:var(--shadow-lift);}
+  .card-art svg{transition:transform .8s var(--ease);}
+  .card:hover .card-art svg{transform:scale(1.05);}
+  .pts-badge{
+    background:rgba(5,46,22,.78); border:1px solid rgba(251,191,36,.35);
+    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+  }
+  .fav{transition:transform .3s var(--ease), color .2s;}
+  .fav:hover{transform:scale(1.14);}
+  .fav:active{transform:scale(.9);}
+  .panel{
+    background:linear-gradient(180deg,#ffffff,#fffdf6);
+    border:1px solid rgba(20,83,45,.12); box-shadow:var(--shadow-card);
+    transition:transform .45s var(--ease), box-shadow .45s var(--ease);
+  }
+  .panel:hover{transform:translateY(-3px); box-shadow:var(--shadow-lift);}
+  .profile-card{
+    background-color:#0a2417;
+    background-image:
+      radial-gradient(circle at 82% 0%, rgba(251,191,36,.20), transparent 46%),
+      radial-gradient(circle at 8% 100%, rgba(74,222,128,.16), transparent 50%),
+      linear-gradient(150deg,#071a0f,#14532d 70%,#0a2417);
+    border:1px solid rgba(255,255,255,.16);
+  }
+  .balance{font-size:2.45rem; letter-spacing:-.03em;}
+  .trust-item{transition:transform .45s var(--ease), box-shadow .45s var(--ease); box-shadow:0 2px 6px rgba(20,60,35,.04);}
+  .trust-item:hover{transform:translateY(-3px); box-shadow:var(--shadow-card);}
+  .plan{transition:transform .45s var(--ease), box-shadow .45s var(--ease); box-shadow:0 2px 6px rgba(20,60,35,.04);}
+  .plan:hover{transform:translateY(-3px); box-shadow:var(--shadow-card);}
+  .plan.plus{background:linear-gradient(180deg,#ffffff,#fff7ed); box-shadow:var(--shadow-card);}
+  .trip{transition:box-shadow .3s ease, transform .3s var(--ease);}
+  .trip:hover{box-shadow:var(--shadow-card); transform:translateY(-2px);}
+
+  /* --- buttons: gradients, lift, shine --- */
+  .btn{transition:transform .3s var(--ease), box-shadow .3s ease, background .25s ease; position:relative; overflow:hidden;}
+  .btn-terra{
+    background:linear-gradient(135deg,#ea580c,#c2410c);
+    box-shadow:0 14px 28px -12px rgba(194,65,12,.65);
+  }
+  .btn-terra:hover{background:linear-gradient(135deg,#f97316,#d9480f); transform:translateY(-2px); box-shadow:0 20px 36px -12px rgba(194,65,12,.7);}
+  .btn-green{background:linear-gradient(135deg,#16a34a,#14532d); box-shadow:0 14px 28px -12px rgba(20,83,45,.6);}
+  .btn-green:hover{background:linear-gradient(135deg,#22c55e,#166534); transform:translateY(-2px);}
+  .btn-ghost:hover{transform:translateY(-1px);}
+  .btn-terra::after, .btn-green::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.35) 50%,transparent 75%);
+    transform:translateX(-130%); transition:transform .6s var(--ease);
+  }
+  .btn-terra:hover::after, .btn-green:hover::after{transform:translateX(130%);}
+
+  /* --- forms --- */
+  input[type=text],input[type=number],input[type=date],select,textarea{transition:border-color .2s ease, box-shadow .2s ease;}
+  input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:focus,textarea:focus{
+    outline:none; border-color:#166534; box-shadow:0 0 0 4px rgba(22,101,52,.16);
+  }
+  .mode-tabs button{transition:all .25s ease;}
+
+  /* --- modal & footer --- */
+  .overlay{background:rgba(6,18,10,.66); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);}
+  .modal{border:1px solid rgba(255,255,255,.45); box-shadow:0 34px 80px -20px rgba(0,0,0,.5); animation:pop .35s var(--ease);}
+  footer{
+    background:linear-gradient(180deg,#0a2417,#04100a);
+    border-top:1px solid rgba(255,255,255,.13);
+  }
+  .toast{border:1px solid rgba(255,255,255,.18); box-shadow:0 20px 44px -12px rgba(3,15,8,.55);}
+
+  /* --- scroll progress (portfolio signature) --- */
+  .scroll-progress{
+    position:fixed; top:0; left:0; width:100%; height:2px; z-index:60;
+    transform:scaleX(0); transform-origin:left; pointer-events:none;
+    background:linear-gradient(90deg,#fbbf24,#ea580c);
+  }
+
+  /* --- scroll reveal (gated: no-JS never hides content) --- */
+  html.fx .reveal{opacity:0; transform:translateY(26px); transition:opacity .8s ease, transform .9s var(--ease);}
+  html.fx .reveal.visible{opacity:1; transform:none;}
+
+  @media (max-width:640px){
+    .hero{animation:none;}
+    .hero h1{font-size:2rem;}
+    .card:hover, .panel:hover, .plan:hover, .trust-item:hover{transform:none;}
+  }
+  @media (hover:none){ .card:hover, .panel:hover{transform:none;} }
+  @media (prefers-reduced-motion: reduce){
+    .hero{animation:none;}
+    html.fx .reveal{opacity:1; transform:none; transition:none;}
+    .card, .panel, .plan, .trust-item, .trip, .btn, .card-art svg{transition:none;}
+    .modal{animation:none;}
+  }
+</style>
+<style id="ui-polish">
+/* ============ POLISH KIT — dark mode, skip link, FAQ, modal, back-to-top, print (see DESIGN_SYSTEM.md §10) ============ */
+  .skip-link{
+    position:fixed; left:12px; top:-70px; z-index:300;
+    background:#052e16; color:#fff; padding:10px 18px; border-radius:10px;
+    font-size:14px; font-weight:700; text-decoration:none;
+    transition:top .25s var(--ease); box-shadow:0 14px 30px -10px rgba(0,0,0,.5);
+  }
+  .skip-link:focus{top:12px;}
+  .theme-toggle{
+    flex:0 0 auto; width:42px; height:42px; border-radius:50%;
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.25); color:#fde68a;
+    font-size:18px; cursor:pointer; line-height:1;
+    transition:transform .3s var(--ease), background .25s;
+  }
+  .theme-toggle:hover{transform:translateY(-2px) rotate(12deg); background:rgba(255,255,255,.16);}
+  .last-updated{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; opacity:.85;}
+
+  /* FAQ */
+  .faq-item{
+    background:#fff; border:1px solid var(--line); border-radius:14px;
+    margin-top:12px; padding:2px 18px; box-shadow:0 2px 6px rgba(20,60,35,.04);
+  }
+  .faq-item summary{
+    cursor:pointer; font-family:var(--font-display); font-weight:700; letter-spacing:-.01em;
+    padding:13px 0; list-style:none; display:flex; align-items:center; gap:10px; color:var(--ink);
+  }
+  .faq-item summary::-webkit-details-marker{display:none;}
+  .faq-item summary::after{content:"+"; margin-left:auto; font-size:1.25rem; color:var(--terra); transition:transform .3s var(--ease);}
+  .faq-item[open ] summary::after{transform:rotate(45deg);}
+  .faq-item p{padding:0 0 15px; color:#374151; font-size:.96rem; max-width:70ch;}
+
+  /* form states */
+  .was-validated input:invalid, .was-validated select:invalid, .was-validated textarea:invalid{
+    border-color:#dc2626!important; box-shadow:0 0 0 4px rgba(220,38,38,.14)!important;
+  }
+  .fx-highlight{animation:fxPulse 1.5s var(--ease) 2;}
+  @keyframes fxPulse{
+    0%{box-shadow:0 0 0 0 rgba(251,191,36,0)}
+    35%{box-shadow:0 0 0 4px rgba(251,191,36,.75),0 22px 44px -18px rgba(20,60,35,.45)}
+    100%{box-shadow:0 0 0 0 rgba(251,191,36,0)}
+  }
+
+  /* back to top */
+  #toTop{
+    position:fixed; right:18px; bottom:18px; z-index:90; width:46px; height:46px; border-radius:50%;
+    border:1px solid rgba(255,255,255,.3); color:#fff; font-size:19px; cursor:pointer;
+    background:linear-gradient(135deg,#f59e0b,#c2410c);
+    box-shadow:0 16px 34px -10px rgba(60,30,4,.55);
+    opacity:0; pointer-events:none; transform:translateY(12px);
+    transition:opacity .35s var(--ease), transform .35s var(--ease);
+  }
+  #toTop.show{opacity:1; pointer-events:auto; transform:none;}
+  #toTop:hover{transform:translateY(-3px);}
+
+  /* confirmation modal */
+  .fx-overlay{
+    position:fixed; inset:0; z-index:200; padding:18px; display:none;
+    align-items:center; justify-content:center;
+    background:rgba(4,14,8,.62); -webkit-backdrop-filter:blur(5px); backdrop-filter:blur(5px);
+  }
+  .fx-overlay.open{display:flex;}
+  .fx-modal{
+    background:var(--cream); color:var(--ink); border-radius:18px; max-width:430px; width:100%;
+    padding:22px; box-shadow:0 34px 80px -20px rgba(0,0,0,.55);
+    animation:fxPop .32s var(--ease);
+  }
+  @keyframes fxPop{from{transform:scale(.96) translateY(10px); opacity:.4} to{transform:scale(1) translateY(0); opacity:1}}
+  .fx-modal h3{font-family:var(--font-display); font-weight:800; letter-spacing:-.015em; font-size:19px; margin-bottom:8px;}
+  .fx-modal p{font-size:.96rem; color:#43524a; line-height:1.55; white-space:pre-line;}
+  .fx-actions{display:flex; gap:10px; margin-top:20px;}
+  .fx-actions .btn{flex:1;}
+
+  /* ---------- DARK THEME ---------- */
+  html[data-theme="dark"] body{
+    background:
+      radial-gradient(1100px 520px at 90% -5%, rgba(251,191,36,.06), transparent 60%),
+      radial-gradient(900px 480px at -12% 0%, rgba(22,101,52,.08), transparent 55%),
+      #060f0a;
+    color:#eef3ea;
+  }
+  html[data-theme="dark"] .card, html[data-theme="dark"] .panel,
+  html[data-theme="dark"] .plan, html[data-theme="dark"] .trust-item,
+  html[data-theme="dark"] .trip, html[data-theme="dark"] .host-card,
+  html[data-theme="dark"] .calc, html[data-theme="dark"] .rules,
+  html[data-theme="dark"] .empty, html[data-theme="dark"] .faq-item{
+    background:#0c1f14; border-color:rgba(255,255,255,.11); color:#eef3ea;
+  }
+  html[data-theme="dark"] .plan.plus{background:linear-gradient(180deg,#0c1f14,#1a1409);}
+  html[data-theme="dark"] .modal{background:#0c1f14; color:#eef3ea;}
+  html[data-theme="dark"] .modal-in h2, html[data-theme="dark"] .card-title,
+  html[data-theme="dark"] .trip b{color:#eef3ea;}
+  html[data-theme="dark"] .sec-head h2, html[data-theme="dark"] .panel h3,
+  html[data-theme="dark"] .trust-item h4{color:#86efac;}
+  html[data-theme="dark"] .profile-card h3{color:#fbbf24;}
+  html[data-theme="dark"] .card-loc, html[data-theme="dark"] .specs,
+  html[data-theme="dark"] .meta, html[data-theme="dark"] .count-label,
+  html[data-theme="dark"] .host-card small, html[data-theme="dark"] .sec-head p{color:#9db3a4;}
+  html[data-theme="dark"] .avail{color:#4ade80;}
+  html[data-theme="dark"] .tag{background:#12281a; border-color:rgba(255,255,255,.12); color:#cfe3d2;}
+  html[data-theme="dark"] .panel p, html[data-theme="dark"] .panel li,
+  html[data-theme="dark"] .plan ul, html[data-theme="dark"] .rules,
+  html[data-theme="dark"] .faq-item p{color:#c3d4c6;}
+  html[data-theme="dark"] .faq-item summary{color:#eef3ea;}
+  html[data-theme="dark"] label{color:#86efac;}
+  html[data-theme="dark"] .checkrow label{color:#eef3ea;}
+  html[data-theme="dark"] input[type=text], html[data-theme="dark"] input[type=number],
+  html[data-theme="dark"] input[type=date], html[data-theme="dark"] select, html[data-theme="dark"] textarea{
+    background:#0a1a10; color:#eef3ea; border-color:#274434;
+  }
+  html[data-theme="dark"] input::placeholder, html[data-theme="dark"] textarea::placeholder{color:#6b8574;}
+  html[data-theme="dark"] .searchbar{background:#0c1f14; border-color:rgba(255,255,255,.22);}
+  html[data-theme="dark"] .searchbar input{background:transparent; color:#eef3ea;}
+  html[data-theme="dark"] .searchbar input::placeholder{color:#7d9687;}
+  html[data-theme="dark"] .btn-ghost{color:#4ade80; border-color:#4ade80;}
+  html[data-theme="dark"] .btn-ghost:hover{background:rgba(74,222,128,.12);}
+  html[data-theme="dark"] .verified{background:rgba(74,222,128,.14); color:#4ade80; border-color:rgba(74,222,128,.4);}
+  html[data-theme="dark"] .calc .total{color:#fb923c;}
+  html[data-theme="dark"] .mode-tabs button{background:#0a1a10; color:#4ade80; border-color:#4ade80;}
+  html[data-theme="dark"] .mode-tabs button.active{background:#166534; color:#fff;}
+  html[data-theme="dark"] ::-webkit-scrollbar-track{background:#08130c;}
+  html[data-theme="dark"] ::-webkit-scrollbar-thumb{border-color:#08130c;}
+  html[data-theme="dark"]{scrollbar-color:#166534 #08130c;}
+  html[data-theme="dark"] .fx-modal{background:#0c1f14; color:#eef3ea;}
+  html[data-theme="dark"] .fx-modal p{color:#b9cec0;}
+
+  /* ---------- PRINT ---------- */
+  @media print{
+    header, footer, .scroll-progress, #toTop, .theme-toggle, .toast, .searchbar, .chips, .hero-stats{display:none!important;}
+    body{background:#fff!important; color:#000!important;}
+    .hero{background:#fff!important; animation:none; padding:10px 0;}
+    .hero *, .hero h1 em{color:#000!important; -webkit-text-fill-color:#000;}
+    .card, .panel, .plan, .trust-item, .faq-item{box-shadow:none!important; border:1px solid #999!important; break-inside:avoid; transform:none!important; opacity:1!important;}
+    .card-art svg{max-height:110px;}
+  }
+</style>
 </head>
 <body>
+<a class="skip-link" href="#view-home">Skip to content</a>
 
 <header>
   <div class="wrap header-in">
@@ -178,6 +502,7 @@
       <button data-nav="trips" onclick="showView('trips')">My Trips</button>
       <button data-nav="plus" onclick="showView('plus')">Membership</button>
     </nav>
+    <button id="themeToggle" class="theme-toggle" type="button" aria-label="Switch to dark mode">&#9790;</button>
   </div>
 </header>
 
@@ -246,6 +571,31 @@
       <div class="trust-item"><h4>⭐ Verified reviews</h4><p>Reviews can only be left after a completed stay, by real exchange partners — no bought ratings.</p></div>
       <div class="trust-item"><h4>💬 Secure messaging</h4><p>Chat stays inside SwapGhar until a swap is confirmed. Personal numbers are never shown publicly.</p></div>
     </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="wrap">
+    <div class="sec-head"><h2>Questions, answered</h2></div>
+    <details class="faq-item">
+      <summary>How do points actually work?</summary>
+      <p>You earn points every night a guest stays at your home, and spend them to stay at any member's home — no need to swap at the same time, or even with the same person. As a guide, 1 point is worth about &#8377;10 of stay value, and points never expire while your membership is active.</p>
+    </details>
+    <details class="faq-item">
+      <summary>What is a simultaneous swap?</summary>
+      <p>You and another member stay in each other's homes over the same dates. No points change hands — you simply trade stays. It is the classic home exchange, and it costs nothing beyond your membership.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Is my home protected during a swap?</summary>
+      <p>Yes. Every confirmed exchange is covered by SwapGhar home protection up to &#8377;10 lakh for accidental damage, and only ID-verified members can host or travel. House rules are agreed before the swap begins.</p>
+    </details>
+    <details class="faq-item">
+      <summary>How are members verified?</summary>
+      <p>Every member verifies a government ID and a phone number before they can list a home or request a stay. Reviews can only be left after a completed stay by a real exchange partner — no bought ratings.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Do I need SwapGhar Plus to swap homes?</summary>
+      <p>No. The Free plan lets you browse every home, keep one active listing and swap — a small service fee applies per confirmed swap. Plus removes the per-swap fee, allows unlimited listings and includes priority support.</p>
+    </details>
   </section>
 </main>
 
@@ -341,7 +691,7 @@
 <footer>
   <div class="wrap">
     <div><b>SwapGhar</b> — Home Exchange for India.<br><small>Swap homes. Skip the hotel bill.</small></div>
-    <div style="margin-left:auto"><small>Demo build · Points and prices are illustrative · Made in India 🇮🇳</small></div>
+    <div style="margin-left:auto"><small>Demo build · Points and prices are illustrative · Made in India 🇮🇳</small><br><small class="last-updated">Last updated · 22 Oct 2026</small></div>
   </div>
 </footer>
 
@@ -649,6 +999,229 @@ function joinPlan(p){
 
 /* ---------- init ---------- */
 renderChips(); renderListings(); syncPoints(); renderTrips();
+</script>
+<script>
+/* ===== UI treatment FX layer — presentational only (reveal, counters, scroll progress) ===== */
+(function(){
+'use strict';
+var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+document.documentElement.classList.add('fx');
+
+/* ---------- scroll progress ---------- */
+var bar = document.createElement('div');
+bar.className = 'scroll-progress';
+document.body.appendChild(bar);
+function onScroll(){
+  var h = document.documentElement;
+  var max = h.scrollHeight - h.clientHeight;
+  var y = window.pageYOffset || h.scrollTop || 0;
+  bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, y / max) : 0) + ')';
+}
+window.addEventListener('scroll', onScroll, { passive:true });
+window.addEventListener('resize', onScroll);
+onScroll();
+
+/* ---------- scroll reveal ---------- */
+var io = null;
+if ('IntersectionObserver' in window && !reduce){
+  io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold:.1 });
+}
+function tagReveal(el, delay){
+  if (!el || el._fxTagged) return;
+  el._fxTagged = true;
+  el.classList.add('reveal');
+  if (delay) el.style.transitionDelay = delay + 'ms';
+  if (io) io.observe(el); else el.classList.add('visible');
+}
+document.querySelectorAll('.hero h1, .hero p, .searchbar, .chips, .hero-stats, .sec-head, .panel, .trust-item, .plan, .faq-item').forEach(function(el){ tagReveal(el, 0); });
+function tagChildren(container, selector){
+  if (!container) return;
+  var kids = container.querySelectorAll(selector);
+  kids.forEach(function(el, i){ tagReveal(el, (i % 3) * 70); });
+}
+var grid = document.getElementById('listingsGrid');
+tagChildren(grid, '.card');
+if (grid) new MutationObserver(function(){ tagChildren(grid, '.card'); }).observe(grid, { childList:true });
+var trips = document.getElementById('tripsList');
+tagChildren(trips, '.trip');
+if (trips) new MutationObserver(function(){ tagChildren(trips, '.trip'); }).observe(trips, { childList:true });
+
+/* ---------- number counters ---------- */
+function splitNum(txt){
+  var m = String(txt).match(/^(\D*?)([\d][\d,]*)([\s\S]*)$/);
+  if (!m) return null;
+  return { prefix:m[1], target:parseInt(m[2].replace(/,/g, ''), 10), suffix:m[3] };
+}
+function fmtNum(n){ return Math.round(n).toLocaleString('en-IN'); }
+function makeCounter(get, set){
+  var raf = null, lastWrite = null;
+  function kick(forceZero){
+    var txt = get();
+    if (txt === lastWrite) return;                 /* our own animated write — ignore */
+    var parts = splitNum(txt);
+    if (!parts){ lastWrite = txt; return; }
+    if (reduce || parts.target === 0){ lastWrite = txt; return; }
+    var from = 0;
+    if (!forceZero && lastWrite !== null){
+      var cur = splitNum(lastWrite);
+      from = cur ? cur.target : 0;
+    }
+    if (from === parts.target){ lastWrite = txt; return; }
+    if (raf) cancelAnimationFrame(raf);
+    var start = null, dur = 750, p = parts;
+    function frame(ts){
+      if (!start) start = ts;
+      var t = Math.min(1, (ts - start) / dur);
+      var e = 1 - Math.pow(1 - t, 3);
+      var s = p.prefix + fmtNum(from + (p.target - from) * e) + p.suffix;
+      lastWrite = s; set(s);
+      if (t < 1){ raf = requestAnimationFrame(frame); }
+      else { raf = null; var fin = p.prefix + fmtNum(p.target) + p.suffix; lastWrite = fin; set(fin); }
+    }
+    raf = requestAnimationFrame(frame);
+  }
+  return kick;
+}
+
+/* points wallet (header pill + profile card) */
+['pointsBalance', 'pointsBalance2'].forEach(function(id){
+  var el = document.getElementById(id);
+  if (!el) return;
+  var kick = makeCounter(
+    function(){ return el.textContent; },
+    function(s){ el.textContent = s; }
+  );
+  new MutationObserver(function(){ kick(false); }).observe(el, { characterData:true, childList:true, subtree:true });
+  kick(true);
+});
+
+/* hero stats — one-time count-up */
+document.querySelectorAll('.hero-stats div b').forEach(function(el){
+  var kick = makeCounter(
+    function(){ return el.textContent; },
+    function(s){ el.textContent = s; }
+  );
+  kick(true);
+});
+})();
+</script>
+<script>
+/* ===== POLISH KIT layer — theme, back-to-top, form states, confirmation modal ===== */
+(function(){
+'use strict';
+var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+/* ---------- dark mode (persisted separately; app data key untouched) ---------- */
+var THEME_KEY = 'swapghar_theme';
+var toggle = document.getElementById('themeToggle');
+function applyTheme(t){
+  if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  else document.documentElement.removeAttribute('data-theme');
+  if (toggle){
+    toggle.innerHTML = (t === 'dark') ? '&#9728;' : '&#9790;';
+    toggle.setAttribute('aria-label', (t === 'dark') ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+}
+var savedTheme = 'light';
+try { savedTheme = localStorage.getItem(THEME_KEY) || 'light'; } catch(e){}
+applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+if (toggle){
+  toggle.addEventListener('click', function(){
+    var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    try { localStorage.setItem(THEME_KEY, next); } catch(e){}
+  });
+}
+
+/* ---------- back to top ---------- */
+var toTop = document.createElement('button');
+toTop.id = 'toTop'; toTop.type = 'button';
+toTop.setAttribute('aria-label', 'Back to top');
+toTop.innerHTML = '&#8593;';
+document.body.appendChild(toTop);
+window.addEventListener('scroll', function(){
+  toTop.classList.toggle('show', (window.pageYOffset || 0) > 600);
+}, { passive:true });
+toTop.addEventListener('click', function(){
+  window.scrollTo({ top:0, behavior: reduce ? 'auto' : 'smooth' });
+});
+
+/* ---------- confirmation modal ---------- */
+var overlay = document.createElement('div');
+overlay.className = 'fx-overlay';
+overlay.innerHTML = '<div class="fx-modal" role="alertdialog" aria-modal="true">' +
+  '<h3 class="fx-title"></h3><p class="fx-body"></p>' +
+  '<div class="fx-actions">' +
+    '<button type="button" class="btn btn-ghost fx-cancel">Not yet</button>' +
+    '<button type="button" class="btn btn-terra fx-confirm" style="width:auto;padding:10px 22px">Send request</button>' +
+  '</div></div>';
+document.body.appendChild(overlay);
+var confirmCb = null;
+function openConfirm(o){
+  overlay.querySelector('.fx-title').textContent = o.title;
+  overlay.querySelector('.fx-body').textContent = o.body;
+  overlay.querySelector('.fx-confirm').textContent = o.confirmLabel || 'Confirm';
+  confirmCb = o.onConfirm || null;
+  overlay.classList.add('open');
+}
+function closeConfirm(){ overlay.classList.remove('open'); confirmCb = null; }
+overlay.querySelector('.fx-cancel').addEventListener('click', closeConfirm);
+overlay.addEventListener('click', function(e){ if (e.target === overlay) closeConfirm(); });
+overlay.querySelector('.fx-confirm').addEventListener('click', function(){
+  var cb = confirmCb; closeConfirm(); if (cb) cb();
+});
+
+/* ---------- exchange request: confirmation before it is sent ---------- */
+document.addEventListener('click', function(e){
+  var btn = (e.target && e.target.closest) ? e.target.closest('button') : null;
+  if (!btn || btn.textContent.trim() !== 'Send exchange request') return;
+  var dIn = document.getElementById('dIn'), dOut = document.getElementById('dOut');
+  var calcLine = document.getElementById('calcLine');
+  if (!dIn || !dOut || !calcLine) return;
+  var n = Math.round((new Date(dOut.value) - new Date(dIn.value)) / 864e5);
+  if (!(n > 0)) return;                                    /* invalid dates — let the app toast */
+  var calcText = calcLine.textContent.replace(/\s+/g, ' ').trim();
+  var simul = document.getElementById('modeSimul') && document.getElementById('modeSimul').classList.contains('active');
+  if (simul){
+    var offer = document.getElementById('offerHome');
+    if (!offer || !offer.value) return;                    /* no home to offer — let the app toast */
+  } else {
+    var bal = calcText.match(/balance after:\s*(-?[\d,]+)/);
+    if (bal && parseInt(bal[1].replace(/,/g, ''), 10) < 0) return;  /* insufficient points — let the app toast */
+  }
+  e.preventDefault(); e.stopPropagation();
+  var titleEl = document.querySelector('#modalBox h2');
+  var title = titleEl ? titleEl.textContent : 'this home';
+  openConfirm({
+    title: 'Send this exchange request?',
+    body: title + '\n' + dIn.value + ' \u2192 ' + dOut.value + ' \u00B7 ' + n + ' night' + (n > 1 ? 's' : '') + '\n' + calcText,
+    confirmLabel: 'Send request',
+    onConfirm: function(){ if (typeof window.submitRequest === 'function') window.submitRequest(); }
+  });
+}, true);
+
+/* ---------- list-your-home form: error styling + success highlight ---------- */
+var pendingListing = false;
+document.addEventListener('submit', function(e){
+  var f = e.target;
+  if (!f || f.tagName !== 'FORM' || !f.closest || !f.closest('#view-list')) return;
+  if (!f.checkValidity()){ f.classList.add('was-validated'); }
+  else { pendingListing = true; }
+}, true);
+var grid = document.getElementById('listingsGrid');
+if (grid){
+  new MutationObserver(function(){
+    if (!pendingListing) return;
+    pendingListing = false;
+    var first = grid.querySelector('.card');
+    if (first) first.classList.add('fx-highlight');
+  }).observe(grid, { childList:true });
+}
+})();
 </script>
 </body>
 </html>
